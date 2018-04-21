@@ -1,0 +1,39 @@
+<%include base/header.ejs %>
+    <link rel="stylesheet" href="/stylesheets/loginAndRegister.css">
+  </head>  
+  <body>
+      <div class="login-wrapper">
+        <div class="content login-content">
+            <div class="head">
+                <span class="switch-to to-register">
+                    <a href="/register" class="text">注册</a>
+                </span>
+            </div>
+            <div class="main">
+                <span class="title">
+                    <span class="dot"></span>
+                    <span class="horizon-line"></span>
+                    <span class="text">登录</span>
+                    <span class="horizon-line"></span>
+                    <span class="dot"></span>
+                </span>
+                <div id="requiredInfo" class="info">
+                    <div class="input-area">
+                        <label for="phone">手机号</label>
+                        <input type="text" name="phone" class="phone" />
+                    </div>
+                    <span class="horizon-line"></span>
+                    <div class="input-area">
+                        <label for="password">密码</label>
+                        <input type="password" name="password" class="password" />
+                    </div>
+                </div>
+                <button class="btn btn-primary confirm-btn" id="loginBtn">确认</button>
+            </div>
+        </div>
+        <%include base/alertWarning.ejs %>
+    </div>
+    <%include base/footer.ejs %>
+    <script src="/javascripts/loginAndRegister.js"></script>
+  </body>  
+</html>

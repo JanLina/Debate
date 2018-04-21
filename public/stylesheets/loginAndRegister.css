@@ -1,0 +1,112 @@
+/* login && common */
+.horizon-line {
+    display: inline-block;
+    height: 1px;
+    border: none;
+}
+.content {
+    margin: auto;
+    width: 376px;
+    padding-bottom: 37px;
+    box-shadow: 0 0 6px 0 rgba(10,69,125,0.30);
+    border-radius: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    overflow: hidden;
+}
+.content .head {
+    background-image: url('/images/loginBG.png');
+    background-size: cover;
+    height: 219px;
+}
+.content .head .switch-to { 
+    width: 49px;
+    height: 118px;
+    float: right;
+    margin-right: 30px;
+    margin-top: -3px;
+    background-image: url('/images/switch.png');
+    background-size: cover;
+}
+.content .head .switch-to .text {
+    display: inline-block;
+    width: 20px;
+    margin-left: 17px;
+    margin-top: 40px;
+    font-size: 17px;
+    color: #fff;
+    opacity: 0.7;
+}
+.content .main {
+    text-align: center;
+}
+.content .main .title {
+    font-size: 23px;
+    font-weight: lighter;
+    color: #3788d4;
+    letter-spacing: 6px;
+}
+.content .main .title .text {
+    margin: 0 1px;
+    text-align: center;
+}
+.content .main .title .dot {
+    display: inline-block;
+    background: rgba(15,108,197,0.16);
+    width: 3px;
+    height: 3px;
+    margin-bottom: 6px;
+    border-radius: 100%;
+}
+.content .main .title .horizon-line {
+    width: 79px;
+    margin-bottom: 7px;
+    background-color: rgba(15,108,197,0.16);
+}
+.content .main .info {
+    width: 265px;
+    height: 88px;
+    margin: auto;
+    margin-top: 20px;
+    box-shadow:0 0 2px 0 rgba(10,69,125,0.30);
+    border-radius:2px;
+}
+.content .main .info .input-area {
+    height: 43px;
+    transform: translateY(10px);
+    text-align: left;
+    padding-left: 20px;
+}
+.content .main .info .input-area label {
+    display: inline-block;
+    width: 62px;
+    font-size: 13px;
+    color: rgba(10,69,125,0.84);
+    letter-spacing: 1px;
+    text-align: left;
+}
+.content .main .info .input-area input {
+    border: none;
+    width: 160px;
+    margin-top: 1px;
+    caret-color: rgba(10,69,125,0.84);
+}
+.content .main .info .horizon-line {
+    display: block;
+    width: 244px;
+    margin-left: 11px;
+    background-color: rgba(10,69,125,0.12);
+}
+.content .main .confirm-btn {
+    background: #3788d4;
+    padding-right: 6px;
+    border-radius: 4px;
+    width: 71px;
+    height: 35px;
+    font-size: 15px;
+    letter-spacing: 7px;
+    margin: 20px 0 18px 175px;
+}

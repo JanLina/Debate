@@ -9,9 +9,14 @@
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
+    "ejs": "^2.5.8",
     "express": "~4.15.2",
     "jade": "~1.11.0",
+    "mongodb": "^3.0.6",
+    "mongoose": "^5.0.15",
     "morgan": "~1.8.1",
-    "serve-favicon": "~2.4.2"
+    "serve-favicon": "~2.4.2",
+    "utility": "^1.13.1",
+    "validator": "^9.4.1"
   }
 }

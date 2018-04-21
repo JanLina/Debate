@@ -1,0 +1,26 @@
+html {
+    font-family: '微软雅黑' sans-serif;
+    background-color: rgba(14,108,197,0.04);
+}
+/* outline */
+button, input {
+    outline: none !important;
+}
+/* position */
+.pa {
+    position: absolute;
+}
+.pr {
+    position: relative;
+}
+/* float */
+.fr {
+    float: right;
+}
+.fl {
+    float: left;
+}
+/* display */
+.hide {
+    display: none;
+}
