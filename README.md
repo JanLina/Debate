@@ -2,10 +2,10 @@
 
 ## 运行 ##
 （安装nodejs、npm和mongodb）
-1.运行mongodb
-2.进入文件夹，运行npm i下载package.json中的依赖模块
-3.运行npm start启动
-4.localhost:3000/进入登录页
+- 运行mongodb
+- 进入文件夹，运行npm i下载package.json中的依赖模块
+- 运行npm start启动
+- localhost:3000/进入登录页
 
 ## 技术点 ##
 - jQuery, Bootstrap
@@ -17,8 +17,8 @@
 ## Todo ##
 - [√] 前台登录注册/切换
 - [√] Mongodb数据库的使用
-- [x] 数据库、接口设计
-- [x] socket.io的使用
+- [×]数据库、接口设计
+- [×] socket.io的使用
 
 ## 知识点 ##
 - 【 middleware 】每一个 middleware 相当于一个加工步骤，当出现一个 http 请求的时候，http 请求会挨着每个 middleware 执行下去。
