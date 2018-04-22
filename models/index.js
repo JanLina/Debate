@@ -15,5 +15,15 @@ mongoose.connection.on('disconnected', function() {
 
 // models
 require('./user');
+require('./competition');
+require('./record');
+require('./statement');
+require('./comment');
+require('./mvpData');
 
 exports.User = mongoose.model('User');
+exports.Competition = mongoose.model('Competition');
+exports.Record = mongoose.model('Record');
+exports.Statement = mongoose.model('Statement');
+exports.Comment = mongoose.model('Comment');
+exports.MvpData = mongoose.model('MvpData');
