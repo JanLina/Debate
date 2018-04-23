@@ -16,7 +16,7 @@ var UserSchema = new Schema({
     numOfCompetition: Number,  // 参与辩论赛次数
     numOfWin: Number,
     numOfMvp: Number,
-    competitions: Object,  // { competitionToStart: [我即将参与的辩论赛的id], competitionCompleted: [我参与过的辩论赛的id] }
+    competitions: Object,  // { toStart: [我即将参与的辩论赛的id], completed: [我参与过的辩论赛的id] }
     following: Array,  // [我关注的人的id]
     followers: Array,  // [关注我的人的id]
     collections: Array  // [我收藏的辩论赛的id]
