@@ -1,6 +1,9 @@
 var querystring = require('querystring');
+var EventProxy = require('eventproxy');
 var models = require('../models');
 var Competition = models.Competition;
+var Record = models.Record;
+var User = models.User;
 
 function calcDate(gap) {
     var dateOfToday = Date.now()
@@ -18,7 +21,9 @@ exports.create = function (req, res, next) {
         status: req.body.status,
         votes: req.body.votes,
         clicks: req.body.clicks,
-        createdAt: req.body.createdAt
+        createdAt: req.body.createdAt,
+        proDebaters: req.body.proDebaters,
+        conDebaters: req.body.conDebaters
         // status: 0,
         // votes: 0,
         // clicks: 0,
@@ -28,7 +33,7 @@ exports.create = function (req, res, next) {
         if (err) {
             res.send({code: 0, data: err});
         } else {
-            res.send({code: 1, data: result});
+            res.send({code: 1, proDebaters: req.body.proDebaters, conDebaters: req.body.conDebaters, data: result});
         }
     }); 
 }
@@ -57,10 +62,10 @@ exports.getList = function (req, res, next) {
     var pageCount = timeRange === '3' ? 20 : 3;
     var findCondition = null;
     var start;
-    if (isNaN(+currentPage)) {
-        res.send({code:0, data: {message: '页数不得为非数字'}});
-        return false;
-    }
+    // if (isNaN(+currentPage)) {
+    //     res.send({code:0, data: {message: '页数不得为非数字'}});
+    //     return false;
+    // }
     if (timeRange === '0') {  // 上周
         var lastMonday = calcDate(-7);
         start = getZero(lastMonday);
@@ -114,6 +119,60 @@ exports.getNew = function (req, res, next) {
             res.send({code: 0, data: err});
         } else {    
             res.send({code: 1, start: start, end: end, data: result});
+        }
+    });
+};
+
+// 进入/回顾辩论赛
+exports.getDetail = function (req, res, next) {
+    var ep = new EventProxy();
+    var compId = req.body.compId;
+    var comp = null;
+    Competition.findOne({_id: compId}, function(err, result) {
+        if (err) {
+            res.send({code: 0, compId: compId, data: err});
+        } else {
+            comp = result;
+            ep.all('getRecord', 'getConDebaters', 'getProDebaters', function(record, conDebaters, proDebaters) {
+                comp.record = record;
+                comp.conDebaters = conDebaters;
+                comp.proDebaters = proDebaters;
+                res.send({code: 1, compId: compId, data: comp});
+            });
+            // 若比赛已结束，获取比赛记录
+            if (comp.status === 2) {
+                Record.findOne({_id: comp.record}, function(err, result) {
+                    if (err) {
+                        ep.emit('getRecord', null);
+                    } else {
+                        ep.emit('getRecord', result);
+                    }
+                });
+            } else {
+                ep.emit('getRecord', null);
+            }
+            if (comp.conDebaters.length) {
+                User.find({$or:[{_id: comp.conDebaters[0]}, {_id: comp.conDebaters[1]}, {_id: comp.conDebaters[2]}]}, function(err, result) {
+                    if (err) {
+                        ep.emit('getConDebaters', []);
+                    } else {
+                        ep.emit('getConDebaters', result);
+                    }
+                });
+            } else {
+                ep.emit('getConDebaters', []);
+            }
+            if (comp.proDebaters.length) {
+                User.find({$or:[{_id: comp.proDebaters[0]}, {_id: comp.proDebaters[1]}, {_id: comp.proDebaters[2]}]}, function(err, result) {
+                    if (err) {
+                        ep.emit('getProDebaters', []);
+                    } else {
+                        ep.emit('getProDebaters', result);
+                    }
+                });
+            } else {
+                ep.emit('getProDebaters', []);
+            }
         }
     });
 };

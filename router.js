@@ -35,6 +35,7 @@ router.post('/competition/getList', competition.getList);
 router.get('/competition/getRecommend', competition.getRecommend);
 router.get('/competition/getHot', competition.getHot);
 router.get('/competition/getNew', competition.getNew);
+router.post('/competition/detail', competition.getDetail);
 
 module.exports = router;
 
