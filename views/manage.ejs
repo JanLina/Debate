@@ -70,8 +70,8 @@
                 var votes = $('#votes').val();
                 var clicks = $('#clicks').val();
                 var createdAt = $('#createdAt').val();
-                var pro = $('#pro').val().split(',');
-                var con = $('#con').val().split(',');
+                var pro = $('#pro').val();
+                var con = $('#con').val();
                 var query = {
                     title: title,
                     status: status,
@@ -81,9 +81,6 @@
                     proDebaters: pro,
                     conDebaters: con
                 };
-                console.log(pro);
-                console.log(con);
-                console.log(createdAt);
                 $.post(config.prefixPath + '/competition/create', query, function(result, status) {
                     console.log(result);
                 });

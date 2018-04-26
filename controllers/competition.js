@@ -22,8 +22,8 @@ exports.create = function (req, res, next) {
         votes: req.body.votes,
         clicks: req.body.clicks,
         createdAt: req.body.createdAt,
-        proDebaters: req.body.proDebaters,
-        conDebaters: req.body.conDebaters
+        proDebaters: req.body.proDebaters.split(','),
+        conDebaters: req.body.conDebaters.split(',')
         // status: 0,
         // votes: 0,
         // clicks: 0,
@@ -33,7 +33,7 @@ exports.create = function (req, res, next) {
         if (err) {
             res.send({code: 0, data: err});
         } else {
-            res.send({code: 1, proDebaters: req.body.proDebaters, conDebaters: req.body.conDebaters, data: result});
+            res.send({code: 1, data: result});
         }
     }); 
 }
@@ -151,17 +151,7 @@ exports.getDetail = function (req, res, next) {
             } else {
                 ep.emit('getRecord', null);
             }
-            if (comp.conDebaters.length) {
-                User.find({$or:[{_id: comp.conDebaters[0]}, {_id: comp.conDebaters[1]}, {_id: comp.conDebaters[2]}]}, function(err, result) {
-                    if (err) {
-                        ep.emit('getConDebaters', []);
-                    } else {
-                        ep.emit('getConDebaters', result);
-                    }
-                });
-            } else {
-                ep.emit('getConDebaters', []);
-            }
+            // 获取正方辩手
             if (comp.proDebaters.length) {
                 User.find({$or:[{_id: comp.proDebaters[0]}, {_id: comp.proDebaters[1]}, {_id: comp.proDebaters[2]}]}, function(err, result) {
                     if (err) {
@@ -172,6 +162,18 @@ exports.getDetail = function (req, res, next) {
                 });
             } else {
                 ep.emit('getProDebaters', []);
+            }
+            // 获取反方辩手
+            if (comp.conDebaters.length) {
+                User.find({$or:[{_id: comp.conDebaters[0]}, {_id: comp.conDebaters[1]}, {_id: comp.conDebaters[2]}]}, function(err, result) {
+                    if (err) {
+                        ep.emit('getConDebaters', []);
+                    } else {
+                        ep.emit('getConDebaters', result);
+                    }
+                });
+            } else {
+                ep.emit('getConDebaters', []);
             }
         }
     });
