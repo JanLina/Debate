@@ -37,7 +37,6 @@ exports.create = function (req, res, next) {
         }
     }); 
 }
-
 // 获取本周热点（上周投票量）
 exports.getHot = function (req, res, next) {
     // 筛选出创建时间为上周的，再根据上周投票量进行排
@@ -53,7 +52,6 @@ exports.getHot = function (req, res, next) {
         }
     });
 };
-
 // 获取榜单（点击量），首页一次只展示3个榜单辩题，点击“换一换”，按顺序展示接下来的榜单
 // 可选时间范围：上周、近3月、本年、所有
 exports.getList = function (req, res, next) {
@@ -90,7 +88,6 @@ exports.getList = function (req, res, next) {
         }
     });
 };
-
 // 获取推荐
 exports.getRecommend = function (req, res, next) {
     var total = 0;
@@ -107,7 +104,6 @@ exports.getRecommend = function (req, res, next) {
         }
     });
 };
-
 // 新辩题立场投票，一次性返回所有下周的新辩题
 exports.getNew = function (req, res, next) {
     var monday = calcDate(0);
@@ -122,7 +118,6 @@ exports.getNew = function (req, res, next) {
         }
     });
 };
-
 // 进入/回顾辩论赛
 exports.getDetail = function (req, res, next) {
     var ep = new EventProxy();
@@ -153,7 +148,7 @@ exports.getDetail = function (req, res, next) {
             }
             // 获取正方辩手
             if (comp.proDebaters.length) {
-                User.find({$or:[{_id: comp.proDebaters[0]}, {_id: comp.proDebaters[1]}, {_id: comp.proDebaters[2]}]}, function(err, result) {
+                User.find({_id: {$in: comp.proDebaters}}, {userName: 1, icon: 1}, function(err, result) {
                     if (err) {
                         ep.emit('getProDebaters', []);
                     } else {
@@ -165,7 +160,7 @@ exports.getDetail = function (req, res, next) {
             }
             // 获取反方辩手
             if (comp.conDebaters.length) {
-                User.find({$or:[{_id: comp.conDebaters[0]}, {_id: comp.conDebaters[1]}, {_id: comp.conDebaters[2]}]}, function(err, result) {
+                User.find({_id: {$in: comp.conDebaters}}, {userName: 1, icon: 1}, function(err, result) {
                     if (err) {
                         ep.emit('getConDebaters', []);
                     } else {
@@ -178,3 +173,6 @@ exports.getDetail = function (req, res, next) {
         }
     });
 };
+// 收藏辩论赛
+
+// 取消收藏辩论赛

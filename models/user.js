@@ -5,21 +5,23 @@ var UserSchema = new Schema({
     phone: Number,
     password: String,
     userName: String,
+    intro: String,
     icon: String,  // base64, FileReader
     role: Number,  // 0表示仅是观众，1表示辩手，2表示主持人
     sex: Number,  // 0表示女，1表示男
-    // 观众特有
-    numOfLikes: Number,
+    followings: Array,  // [我关注的人的id]
+    followers: Array,  // [关注我的人的id]
+    collections: Array,  // [我收藏的辩论赛的id]
     comments: Array,  // [发表的评论的id]
+    // 观众特有
+    numOfLike: Number,
     // 辩手特有
     level: Number,  // 辩论等级
     numOfCompetition: Number,  // 参与辩论赛次数
     numOfWin: Number,
     numOfMvp: Number,
-    competitions: Object,  // { toStart: [我即将参与的辩论赛的id], completed: [我参与过的辩论赛的id] }
-    following: Array,  // [我关注的人的id]
-    followers: Array,  // [关注我的人的id]
-    collections: Array  // [我收藏的辩论赛的id]
+    numOfJump: Number,  // 因该辩手改变立场的观众数
+    competition: Object  // { toStart: [我即将参与的辩论赛的id], completed: [我参与过的辩论赛的id] }
 });
 
 // .pre 表示每次存储数据之前都先调用这个方法

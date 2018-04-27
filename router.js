@@ -19,8 +19,9 @@ router.get('/home', function(req, res, next) {
 
 
 // user
-router.post('/user/register', user.create);
-router.post('/user/login', user.find);
+router.post('/user/register', user.register);
+router.post('/user/login', user.login);
+router.post('/user/changeIntro', user.changeIntro);
 
 // home
 // router.get('/home/hot', competition.getHot);
