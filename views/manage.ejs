@@ -21,7 +21,7 @@
         <input type="number" class="form-control" id="votes">
         <label for="clicks">点击量</label>
         <input type="number" class="form-control" id="clicks">
-        <label for="clicks">创建时间</label>
+        <label for="createdAt">创建时间</label>
         <input type="date" class="form-control" id="createdAt">
         <label for="pro">正方辩手（用,分隔id）</label>
         <input type="text" class="form-control" id="pro">
@@ -59,6 +59,14 @@
         <label for="competitionId">辩论赛id</label>
         <input type="text" class="form-control" id="competitionId">
         <button class="btn btn-primary">获取辩论赛信息</button>
+    </div>
+    <div class="change-intro">
+        <h3>修改个人简介</h3>
+        <label for="userId">用户id</label>
+        <input type="text" class="form-control" id="userId">
+        <label for="intro">新的个人简介</label>
+        <input type="text" class="form-control" id="intro">
+        <button class="btn btn-primary">修改</button>
     </div>
     <%include base/footer.ejs %>
     <script src="/javascripts/loginAndRegister.js"></script>
@@ -112,6 +120,13 @@
             $('.enter-competition .btn').click(function() {
                 var competitionId = $('#competitionId').val();
                 $.post(config.prefixPath + '/competition/detail', {compId: competitionId}, function(result, status) {
+                    console.log(result);
+                });
+            });
+            $('.change-intro .btn').click(function() {
+                var userId = $('#userId').val();
+                var intro = $('#intro').val();
+                $.post(config.prefixPath + '/user/changeIntro', {id: userId, intro: intro}, function(result, status) {
                     console.log(result);
                 });
             });

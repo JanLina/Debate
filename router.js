@@ -16,6 +16,9 @@ router.get('/register', function(req, res, next) {
 router.get('/home', function(req, res, next) {
   res.render('home', { title: '首页' });
 })
+router.get('/debate', function(req, res, next) {
+  res.render('debate', { title: '辩论赛' });
+});
 
 
 // user
