@@ -7,6 +7,11 @@
 - 运行npm start启动
 - localhost:3000/进入登录页
 
+## API ##
+- /competition/getDetail -- 获取辩论赛详细信息
+- /debate/initComp -- 比赛开始时，初始化数据
+
+
 ## 技术点 ##
 - jQuery, Bootstrap
 - nodeJS(express), WebSocket

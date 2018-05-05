@@ -16,6 +16,13 @@ function getZero(date) {
 
 // 创建辩题
 exports.create = function (req, res, next) {
+    var profiles = req.body.profiles.split(',');
+    profiles.forEach((value, index) => {
+        profiles[index] = {
+            id: value.split('#')[0],
+            profile: value.split('#')[1]
+        };
+    });
     var competition = new Competition({
         title: req.body.title,
         status: req.body.status,
@@ -23,7 +30,8 @@ exports.create = function (req, res, next) {
         clicks: req.body.clicks,
         createdAt: req.body.createdAt,
         proDebaters: req.body.proDebaters.split(','),
-        conDebaters: req.body.conDebaters.split(',')
+        conDebaters: req.body.conDebaters.split(','),
+        profiles: profiles
         // status: 0,
         // votes: 0,
         // clicks: 0,
@@ -60,10 +68,6 @@ exports.getList = function (req, res, next) {
     var pageCount = timeRange === '3' ? 20 : 3;
     var findCondition = null;
     var start;
-    // if (isNaN(+currentPage)) {
-    //     res.send({code:0, data: {message: '页数不得为非数字'}});
-    //     return false;
-    // }
     if (timeRange === '0') {  // 上周
         var lastMonday = calcDate(-7);
         start = getZero(lastMonday);

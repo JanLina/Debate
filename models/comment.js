@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var commentSchema = new Schema({
-    competitionId: Number,
-    userId: Number,
-    repliedCommentId: Number,  // 被回复的评论的id，值为0说明这不是回复，是一级评论，计入观众晋升进程
+    competitionId: String,
+    userId: String,
+    repliedCommentId: String,  // 被回复的评论的id，值为0说明这不是回复，是一级评论，计入观众晋升进程
     pubtime: Date,  // 发表时间
     content: String,
     likes: Number,

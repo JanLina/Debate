@@ -33,7 +33,7 @@ ul li {
 /* header */
 .header-wrapper {
     width: 100%;
-    height: 68px;
+    height: 53px;
     background-color: #fff;
     box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
 }
@@ -43,7 +43,7 @@ ul li {
     padding-right: 100px;
 }
 .header-wrapper .header ul {
-    height: 68px;
+    height: 53px;
     display: flex;
     align-items: center;
 }
@@ -61,8 +61,8 @@ ul li {
     margin-right: 15px;
 }
 .header-wrapper .header .right .avatar {
-    width: 44px;
-    height: 44px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     border:1px solid #509ae1;
     overflow: hidden;

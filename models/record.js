@@ -2,15 +2,20 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var recordSchema = new Schema({
-    competitionId: Number,
+    competitionId: String,
     proDebaters: Array,  // [正方辩手id]
     conDebaters: Array,  // [反方辩手id]
-    debateStatements: Array,  // [立论阶段发言的id]
-    freeDebateStatements: Number,  // [[自由辩论阶段某个队伍的队员发言的id]] 共包含3个循环，6个数组
-    endDebate: Object,  // { proEndStatement: 正方结辩的id, conEndStatement: 反方结辩的id }
-    winner: Number,  // 0表示正方，1表示反方
-    mvpUserId: Number,  // MVP辩手id
-    bestStatement: Number,  // 最佳言论id
+    profiles: Array,  // [{ id: 辩手id, profile: 立场简述 }]
+    debateStatements: Array,  // [{userId: 辩手id, statementId: 立论阶段发言的id}]
+    freeDebateStatements: Array,  // [[{userId: 辩手id, statementId: 自由辩论阶段某个队伍的队员发言的id}]] 共包含3个循环，6个数组
+    proEnd: String,  // 正方结辩的id
+    conEnd: String,  // 反方结辩的id
+    proVote: Number,  // 正方票数
+    conVote: Number,  // 反方票数
+    changeSide: Array,  // [{userId: 辩手id, attract: 因其转为我方的观众数，leave: 因其转为他方的观众数}]
+    winner: Number,  // 1表示正方，2表示反方
+    mvpUserId: String,  // MVP辩手id
+    bestStatementId: String,  // 最佳言论id
     comments: Array  // [评论的id]
 });
 

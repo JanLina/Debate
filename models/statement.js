@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var statementSchema = new Schema({
-    competitionId: Number,
+    competitionId: String,
     type: Number,  // 0表示陈述，1表示反驳，2表示结辩
-    userId: Number,
+    userId: String,
     speakingTime: Number,  // 发言花费时间
     content: String  // 当type为0即此发言为陈述时，发言内容可能包含三种类型，所以用html格式存储本字段
 });

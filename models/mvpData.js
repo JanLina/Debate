@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var mvpDataSchema = new Schema({
-    competitionId: Number,
+    competitionId: String,
     activeVoteNumber: Number,  // 整场辩论赛中参与了2次以上投票的观众数
     activePraiseNumber: Number,  // 整场辩论赛中参与了2次以上点赞的观众数
     data: Array

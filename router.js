@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var user = require('./controllers/user');
 var competition = require('./controllers/competition');
+var debate = require('./controllers/debate');
 
 // base
 router.get('/', function(req, res, next) {
@@ -26,6 +27,12 @@ router.post('/user/register', user.register);
 router.post('/user/login', user.login);
 router.post('/user/changeIntro', user.changeIntro);
 
+// debate
+router.post('/debate/initComp', debate.initComp);
+router.post('/debate/publish', debate.publish);
+router.post('/debate/changeSide', debate.changeSide);
+router.post('/debate/getResult', debate.getResult);
+
 // home
 // router.get('/home/hot', competition.getHot);
 
@@ -39,7 +46,7 @@ router.post('/competition/getList', competition.getList);
 router.get('/competition/getRecommend', competition.getRecommend);
 router.get('/competition/getHot', competition.getHot);
 router.get('/competition/getNew', competition.getNew);
-router.post('/competition/detail', competition.getDetail);
+router.post('/competition/getDetail', competition.getDetail);
 
 module.exports = router;
 
