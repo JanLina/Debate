@@ -6,6 +6,11 @@ var User = models.User;
 var Record = models.Record;
 var Statement = models.Statement;
 
+var ws = require("nodejs-websocket")
+ws.connect('ws://localhost:3000/', function() {
+    console.log('connect success');
+});
+
 // 比赛开始后，初始化
 exports.initComp = function(req, res, next) {
     var compId = req.body.compId;
@@ -62,31 +67,27 @@ exports.publish = function(req, res, next) {
             res.send({code: 0, data: err});
         } else {
             var newStatement = result;
-            if (stage === 'point' && type !== 2) {  // 立论阶段
+            if (type === 2) {  // 结辩
+                updateInfo = stand === 1 ? {  // 判断是正方结辩还是反方结辩
+                    proEnd: newStatement._id
+                } : {
+                    conEnd: newStatement._id
+                };
+            } else if (stage === 'point') {  // 立论阶段的陈述
                 updateInfo = {
                     $push: {debateStatements: {userId: userId, statementId: newStatement._id}}
                 };
-            } else if (stage === 'free') {  // 自由辩论阶段
+            } else {  // 自由辩论阶段
                 updateInfo = {
                     $push: {freeDebateStatements: {userId: userId, statementId: newStatement._id}}
                 };
-            } else if (type === 2) {  // 结辩
-                if (stand === 1) {
-                    updateInfo = {
-                        proEnd: newStatement._id
-                    };
-                } else {
-                    updateInfo = {
-                        conEnd: newStatement._id
-                    };
-                }
             }
             Competition.findOne({_id: compId}, {recordId: 1}, function(err, result) {
                 if (err) {
                     res.send({code: 0, data: err});
                 } else {
                     var recordId = result.recordId;
-                    Record.update({_id: recordId}, updateInfo, {upsert: true}, function(err, result) {
+                    Record.update({_id: recordId}, updateInfo, {upsert: true}, function(err, result) {  // 更新辩论赛对应的比赛记录
                         if (err) {
                             res.send({code: 0, data: err});
                         } else {
@@ -95,14 +96,14 @@ exports.publish = function(req, res, next) {
                     });
                 }
             });
-        }
+        }   
     });
 };
 
 // 观众改变立场
 exports.changeSide = function(req, res, next) {
     var compId = req.body.compId;
-    var debater = req.body.debater;  // 在哪位辩手发言的时候，改变立场
+    var debater = req.body.debater || '';  // 在哪位辩手发言的时候，改变立场
     var debaterSide = req.body.debaterSide;  // 该辩手是正方还是反方（1表示正方，2表示反方）
     var side = req.body.side;  // 观众转到哪个立场（1表示正方，2表示反方）
     var change = debaterSide === side ? 'attract' : 'leave';
@@ -116,28 +117,35 @@ exports.changeSide = function(req, res, next) {
                 if (err) {
                     res.send({code: 0, data: err});
                 } else {
+                    // 若前端传来了辩手的id，说明此次投票是在立论阶段进行的，即要计入MVP的评选
+                    if (debater) {
+                        var changeSide = JSON.parse(JSON.stringify(result.changeSide));  // 深拷贝
+                        var isExist = false;
+                        changeSide.forEach(function(value, index) {
+                            if (value.userId === debater) {
+                                value[change] += 1;
+                                isExist = true;
+                            }
+                        });
+                        // 若changeSide中还没有该辩手的相关记录，新建一个元素插入数组
+                        if (!isExist) {
+                            if (change === 'attract') {
+                                changeSide.push({userId: debater, attract: 1, leave: 0});
+                            } else {
+                                changeSide.push({userId: debater, attract: 0, leave: 1});
+                            }
+                        }
+                        // 观众改变立场记录
+                        updateInfo.$set = {changeSide: changeSide};
+                    }
+                    // 正方或反方票数加一
                     if (+side === 1) {
-                        updateInfo.$inc = {proVote: 1};
+                        updateInfo.$inc = {proVote: 1, conVote: -1};
                     } else {
-                        updateInfo.$inc = {conVote: 1};
+                        updateInfo.$inc = {proVote: -1, conVote: 1};
                     }
-                    var changeSide = result.changeSide;
-                    var temp = false;
-                    changeSide.forEach(function(value, index) {
-                        if (value.userId === debater) {
-                            value[change] += 1;
-                            temp = true;
-                        }
-                    });
-                    if (!temp) {
-                        if (change === 'attract') {
-                            changeSide.push({userId: debater, attract: 1, leave: 0});
-                        } else {
-                            changeSide.push({userId: debater, attract: 0, leave: 1});
-                        }
-                    }
-                    updateInfo.$set = {changeSide: changeSide};
                     Record.update({_id: recordId}, updateInfo, {upsert: true}, function(err, result) {
+                        // ...
                         if (err) {
                             res.send({code: 0, data: err});
                         } else {

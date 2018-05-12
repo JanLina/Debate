@@ -27,6 +27,8 @@
         <input type="text" class="form-control" id="pro">
         <label for="con">反方辩手（用,分隔id）</label>
         <input type="text" class="form-control" id="con">
+        <label for="profile">立场简述（id+简述）</label>
+        <input type="text" class="form-control" id="profile">
         <button class="btn btn-primary">创建</button>
     </div>
     <div class="get-hot">
@@ -68,10 +70,111 @@
         <input type="text" class="form-control" id="intro">
         <button class="btn btn-primary">修改</button>
     </div>
+    <div class="init-comp">
+        <h3>比赛开始后初始化</h3>
+        <label>比赛id</label>
+        <input type="text" class="form-control compId">
+        <label>正方辩手一二三辩</label>
+        <input type="text" class="form-control pro">
+        <label>反方辩手一二三辩</label>
+        <input type="text" class="form-control con">
+        <button class="btn btn-primary">初始化</button>
+    </div>
+    <div class="publish">
+        <h3>提交言论</h3>
+        <label>比赛id</label>
+        <input type="text" class="form-control compId">
+        <label>用户id</label>
+        <input type="text" class="form-control userId">
+        <label>用户立场（正方1，反方2）</label>
+        <input type="number" class="form-control stand">
+        <label>类型（statement, refute, end）</label>
+        <input type="text" class="form-control type">
+        <label>阶段（point, free）</label>
+        <input type="text" class="form-control stage">
+        <label>内容</label>
+        <input type="text" class="form-control content">
+        <button class="btn btn-primary">提交</button>
+    </div>
+    <div class="change-side">
+        <h3>观众改变立场</h3>
+        <label>比赛id</label>
+        <input type="text" class="form-control compId">
+        <label>辩手id</label>
+        <input type="text" class="form-control debater">
+        <label>辩手立场（1正方，2反方）</label>
+        <input type="number" class="form-control debater-side">
+        <label>立场（1正方，2反方）</label>
+        <input type="number" class="form-control side">
+        <button class="btn btn-primary">提交</button>
+    </div>
+    <div class="get-result">
+        <h3>获取比赛结果</h3>
+        <label>比赛id</label>
+        <input type="text" class="form-control compId">
+        <button class="btn btn-primary">获取结果</button>
+    </div>
+
     <%include base/footer.ejs %>
     <script src="/javascripts/loginAndRegister.js"></script>
     <script>
         $(function() {
+            $('.get-result .btn').click(function() {
+                var compId = $('.get-result .compId').eq(0).val();
+                $.post(config.prefixPath + '/debate/getResult', {compId: compId}, function(result, staus) {
+                    console.log(result);
+                });
+            });
+            $('.change-side .btn').click(function() {
+                var $changeSide = $('.change-side').eq(0);
+                var compId = $changeSide.find('.compId').eq(0).val();
+                var debater = $changeSide.find('.debater').eq(0).val();
+                var debaterSide = $changeSide.find('.debater-side').eq(0).val();
+                var side = $changeSide.find('.side').eq(0).val();
+                var query = {
+                    compId: compId,
+                    debater: debater,
+                    debaterSide: debaterSide,
+                    side: side
+                };
+                $.post(config.prefixPath + '/debate/changeSide', query, function(result, staus) {
+                    console.log(result);
+                });
+            });
+            $('.publish .btn').click(function() {
+                var $publish = $('.publish').eq(0);
+                var compId = $publish.find('.compId').eq(0).val();
+                var userId = $publish.find('.userId').eq(0).val();
+                var stand = $publish.find('.stand').eq(0).val();
+                var type = $publish.find('.type').eq(0).val();
+                var stage = $publish.find('.stage').eq(0).val();
+                var content = $publish.find('.content').eq(0).val();
+                var query = {
+                    compId: compId,
+                    userId: userId,
+                    stand: stand,
+                    type: type,
+                    stage: stage,
+                    content: content,
+                };
+                $.post(config.prefixPath + '/debate/publish', query, function(result, staus) {
+                    console.log(result);
+                });
+            });
+            
+            $('.init-comp .btn').click(function() {
+                var compId = $('.init-comp .compId').eq(0).val();
+                var proDebaters = $('.init-comp .pro').eq(0).val();
+                var conDebaters = $('.init-comp .con').eq(0).val();
+                var query = {
+                    compId: compId,
+                    proDebaters: proDebaters,
+                    conDebaters: conDebaters
+                };
+                $.post(config.prefixPath + '/debate/initComp', query, function(result, staus) {
+                    console.log(result);
+                });
+            });
             $('.create-competition .btn').click(function() {
                 var title = $('#title').val();
                 var status = $('#status').val();
@@ -80,6 +183,7 @@
                 var createdAt = $('#createdAt').val();
                 var pro = $('#pro').val();
                 var con = $('#con').val();
+                var profiles = $('#profile').val();
                 var query = {
                     title: title,
                     status: status,
@@ -87,7 +191,8 @@
                     clicks: clicks,
                     createdAt: createdAt,
                     proDebaters: pro,
-                    conDebaters: con
+                    conDebaters: con,
+                    profiles: profiles
                 };
                 $.post(config.prefixPath + '/competition/create', query, function(result, status) {
                     console.log(result);
@@ -119,7 +224,7 @@
             });
             $('.enter-competition .btn').click(function() {
                 var competitionId = $('#competitionId').val();
-                $.post(config.prefixPath + '/competition/detail', {compId: competitionId}, function(result, status) {
+                $.post(config.prefixPath + '/competition/getDetail', {compId: competitionId}, function(result, status) {
                     console.log(result);
                 });
             });

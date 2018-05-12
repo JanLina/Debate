@@ -41,6 +41,9 @@ router.post('/debate/getResult', debate.getResult);
 router.get('/manage', function(req, res, next) {
   res.render('manage', { title: '后台管理' });
 });
+router.get('/realtime', function(req, res, next) {
+  res.render('realtime', { title: '后台管理' });
+});
 router.post('/competition/create', competition.create);
 router.post('/competition/getList', competition.getList);
 router.get('/competition/getRecommend', competition.getRecommend);

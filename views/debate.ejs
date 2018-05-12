@@ -1,75 +1,82 @@
 <%include base/head.ejs %>
-  <link rel="stylesheet" href="/stylesheets/debate.css">
-    </head>  
-    <body>
-        <% include base/header.ejs %>
-        <div class="main-wrapper">
-            <div class="main">
-                <div class="title">
-                    <img src="images/debate-title-background.png" alt="">
-                    <span class="title-font">一段感情中必定存在占有欲吗？</span>
-                </div>
-                <div class="debate-box">
-                    <div class="debate-progress">
-                        <div class="debate-start">
-                            <div class="line start-sign-line fl"></div>
-                            <span class="sign-font">辩论开始，辩论双方轮流发言</span>
-                            <div class="line start-sign-line fr"></div>
+<link rel="stylesheet" href="/stylesheets/debate.css">
+<script src="/javascripts/lib/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
+</head>
 
-                                <div class="positive-debate"> 
-                                    <div class="debater-info song-font">
-                                        <span>成长的樱桃树</span>
-                                        <span class="dot"></span>
-                                        <span>正方一辩</span>
-                                        <span class="dot"></span>
-                                        <span>立论<span>
-                                    </div>
+<body>
+    <% include base/header.ejs %>
+    <div class="main-wrapper">
+        <div class="main">
+            <div class="title">
+                <img src="images/debate-title-background.png" alt="">
+                <span class="title-font">一段感情中必定存在占有欲吗？</span>
+            </div>
+            <div class="debate-box">
+                <div class="debate-progress">
+                    <div class="debate-start">
+                        <div class="line start-sign-line fl"></div>
+                        <span class="sign-font">辩论开始，辩论双方轮流发言</span>
+                        <div class="line start-sign-line fr"></div>
 
-                                    <div class="debate-content">
-                                        <div class="debater-avatar fl">
-                                        <div class="debater-avatar-blank">
+                        <div class="positive-debate">
+                            <div class="debater-info song-font">
+                                <span>成长的樱桃树</span>
+                                <span class="dot"></span>
+                                <span>正方一辩</span>
+                                <span class="dot"></span>
+                                <span>立论
+                                    <span>
+                            </div>
+
+                            <div class="debate-content">
+                                <div class="debater-avatar fl">
+                                    <div class="debater-avatar-blank">
                                         <img src="images/icon_avatar.jpg" alt="">
-                                        </div>
-                                        </div>
-                                        <div class="content-block">
-                                            <div class="content">
-                                                <p class="conclude">嫉妒可能分为3种紧密关联的情感：羡慕/嫉妒、吃醋以及羞耻。它们都是由于不安全感引起的，在一定程度以内时，都是人正常的天性。</p>
-                                                <p class="point"><1> 羡慕/嫉妒（envy）是直接在两个个体间发生的情绪，一个人因为某种原因envy另一方。</p>
-                                                <p class="argue"><2> 吃醋（jealousy）则是在三个个体之间发生的情绪，A因为在意B，而对C产生了吃醋（jealousy）的情绪。</p>
-                                                <div class="example">
-                                                <div class="example-line fl"></div>
-                                                <p class="example-content">孩子从生下来就会希望爸爸和妈妈的注意力都在自己身上，但是又时常感觉自己并不是父母婚姻情感中的一部分。一般来说，异性恋父母养育的孩子，会将与自己同性别的家长视为“情敌”。他们羡慕这一方家长能拥有另一方家长的爱，有时候甚至到了嫉妒的程度。我们很容易想到，成年以后，一个介入婚姻的小三对于其想要替代掉的伴侣中的那一方也是类似的“羡慕嫉妒恨”的心情，这时，其实是童年的情绪重演。
-当家里有新生儿出生的时候，小孩还容易因为父母对新生儿更加照顾而产生嫉妒的情绪。如果之后在心中留下“我父母更喜欢我的某个兄弟姐妹”的执念的话，可能一辈子都会受到羞耻感和感情上无法被满足的困扰。如果家长时常不在身边（如父母离异或者工作忙碌），孩子感受到的被遗弃感和自我羞耻就会更加强烈。</p>
-                                                </div>
-                                                <p class="conclude">这其实也是我们在看到自己不如他人的时候，为了防止羞耻感而产生的防御机制。</p>
-                                            </div>
-                                        </div>
                                     </div>
-                                
                                 </div>
+                                <div class="content-block">
+                                    <div class="content">
+                                        <p class="conclude">嫉妒可能分为3种紧密关联的情感：羡慕/嫉妒、吃醋以及羞耻。它们都是由于不安全感引起的，在一定程度以内时，都是人正常的天性。</p>
+                                        <p class="point">
+                                            <1> 羡慕/嫉妒（envy）是直接在两个个体间发生的情绪，一个人因为某种原因envy另一方。</p>
+                                        <p class="argue">
+                                            <2> 吃醋（jealousy）则是在三个个体之间发生的情绪，A因为在意B，而对C产生了吃醋（jealousy）的情绪。</p>
+                                        <div class="example">
+                                            <div class="example-line fl"></div>
+                                            <p class="example-content">孩子从生下来就会希望爸爸和妈妈的注意力都在自己身上，但是又时常感觉自己并不是父母婚姻情感中的一部分。一般来说，异性恋父母养育的孩子，会将与自己同性别的家长视为“情敌”。他们羡慕这一方家长能拥有另一方家长的爱，有时候甚至到了嫉妒的程度。我们很容易想到，成年以后，一个介入婚姻的小三对于其想要替代掉的伴侣中的那一方也是类似的“羡慕嫉妒恨”的心情，这时，其实是童年的情绪重演。
+                                                当家里有新生儿出生的时候，小孩还容易因为父母对新生儿更加照顾而产生嫉妒的情绪。如果之后在心中留下“我父母更喜欢我的某个兄弟姐妹”的执念的话，可能一辈子都会受到羞耻感和感情上无法被满足的困扰。如果家长时常不在身边（如父母离异或者工作忙碌），孩子感受到的被遗弃感和自我羞耻就会更加强烈。
+                                            </p>
+                                        </div>
+                                        <p class="conclude">这其实也是我们在看到自己不如他人的时候，为了防止羞耻感而产生的防御机制。</p>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
 
-                        <div class="free-debate">
-                            <div class="line free-sign-line fl"></div>
-                            <span class="sign-font">立论结束，自由辩论开始</span>
-                            <div class="line free-sign-line fr"></div>
-                        </div>
+                    </div>
 
-                        <div class="last-debate">
-                            <div class="line last-debate-sign-line fl"></div>
-                            <span class="sign-font">自由辩论结束，辩论双方总结观点</span>
-                            <div class="line last-debate-sign-line fr"></div>
-                        </div>
+                    <div class="free-debate">
+                        <div class="line free-sign-line fl"></div>
+                        <span class="sign-font">立论结束，自由辩论开始</span>
+                        <div class="line free-sign-line fr"></div>
+                    </div>
 
-                        <div class="end-debate">
-                            <div class="line end-sign-line fl"></div>
-                            <span class="sign-font">辩论结束</span>
-                            <div class="line end-sign-line fr"></div>
+                    <div class="last-debate">
+                        <div class="line last-debate-sign-line fl"></div>
+                        <span class="sign-font">自由辩论结束，辩论双方总结观点</span>
+                        <div class="line last-debate-sign-line fr"></div>
+                    </div>
 
-                            <div class="debate-result">
-                                <p class="result-font fl">正方获胜</p>
-                                <div class="result-line fl"></div>
+                    <div class="end-debate">
+                        <div class="line end-sign-line fl"></div>
+                        <span class="sign-font">辩论结束</span>
+                        <div class="line end-sign-line fr"></div>
+
+                        <div class="debate-result">
+                            <p class="result-font fl">正方获胜</p>
+                            <div class="result-line fl"></div>
                             <!--
                                 <div class="result-positive-avatar fl">
                                     <div class="result-positive-avatar-blank">
@@ -85,44 +92,46 @@
                                 </div>
                                 </div>
                             -->
-                            </div>
                         </div>
-
-                        <div class="comment">
-                            <div class="line comment-line"></div>
-                            <span class="comment-font">评论区</span>
-                        </div>
-
                     </div>
+
+                    <div class="comment">
+                        <div class="line comment-line"></div>
+                        <span class="comment-font">评论区</span>
+                    </div>
+
                 </div>
-                <div class="debater-view">
+            </div>
+            <div class="debater-view">
                 <div class="live-box">
                     <div class="live-box-content">
-                    <div class="opponent-info">
-                    <div id="live-count-down" class="count-down fr">倒计时：50s</div>
-                    </div>
-                    <div class="live-box-line line"></div>
-
-                    <div class="live-content">
-                        <p class="argue">嫉妒可能分为3种紧密关联的情感：羡慕/嫉妒、吃醋以及羞耻。它们都是由于不安全感引起的，在一定程度以内时，都是人正常的天性，是直接在两个个体间发生的情绪，一个人因为某种原因envy另一方。</p>
-                        <p class="conclude">这其实也是我们在看到自己不如他人的时候，为了防止羞耻感而产生的防御机制。</p>
-                        <p class="point"><1> 羡慕/嫉妒（envy）是直接在两个个体间发生的情绪，一个人因为某种原因envy另一方。</p>
-                        <p class="point"><2> 吃醋（jealousy）则是在三个个体之间发生的情绪，A因为在意B，而对C产生了吃醋（jealousy）的情绪。</p>
-                        <div class="example">
-                        <div class="example-line fl"></div>
-                        <p class="example-content">孩子从生下来就会希望爸爸和妈妈的注意力都在自己身上，但是又时常感觉自己并不是父母婚姻情感中的一部分。一般来说，异性恋父母养育的孩子，会将与自己同，会将自己与。</p>
+                        <div class="opponent-info">
+                            <div id="live-count-down" class="count-down fr">倒计时：50s</div>
                         </div>
-                    </div>
-                    <p class="word-count fr">字数：220／250</p>
+                        <div class="live-box-line line"></div>
+
+                        <div class="live-content">
+                            <!--p class="argue">嫉妒可能分为3种紧密关联的情感：羡慕/嫉妒、吃醋以及羞耻。它们都是由于不安全感引起的，在一定程度以内时，都是人正常的天性，是直接在两个个体间发生的情绪，一个人因为某种原因envy另一方。</p>
+                            <p class="conclude">这其实也是我们在看到自己不如他人的时候，为了防止羞耻感而产生的防御机制。</p>
+                            <p class="point">
+                                <1> 羡慕/嫉妒（envy）是直接在两个个体间发生的情绪，一个人因为某种原因envy另一方。</p>
+                            <p class="point">
+                                <2> 吃醋（jealousy）则是在三个个体之间发生的情绪，A因为在意B，而对C产生了吃醋（jealousy）的情绪。</p>
+                            <div class="example">
+                                <div class="example-line fl"></div>
+                                <p class="example-content">孩子从生下来就会希望爸爸和妈妈的注意力都在自己身上，但是又时常感觉自己并不是父母婚姻情感中的一部分。一般来说，异性恋父母养育的孩子，会将与自己同，会将自己与。</p>
+                            </div-->
+                        </div>
+                        <p class="word-count fr">字数：220／250</p>
 
                     </div>
                 </div>
 
                 <div class="edit-box">
                     <div class="edit-box-content">
-                    <p class="descript">编辑你的发言</p>
-                    <div id="edit-count-down" class="count-down fr">倒计时：50s</div>
-                    <div class="edit-box-line line"></div>
+                        <p class="descript">编辑你的发言</p>
+                        <div id="edit-count-down" class="count-down fr">倒计时：50s</div>
+                        <div class="edit-box-line line"></div>
 
                     </div>
 
@@ -131,18 +140,22 @@
                         <input type="button" value="分点" class="point-button">
                         <input type="button" value="例子" class="example-button">
                         <input type="button" value="反驳" class="argue-button">
-                        
+
                         <div class="button-hink fb"></div>
                         <div class="edit-button-line line"></div>
                     </div>
-                    
-                    <textarea class="edit-content"></textarea>
+
+                    <div class="edit-content" contenteditable="true" role="textbox" >测试数据
+                    </div>
                     <input type="button" value="发表" class="edit-publish-button fr">
                     <p class="word-count">字数：220／250</p>
                 </div>
-                </div>
             </div>
         </div>
-        <%include base/footer.ejs %>
-    </body>
+    </div>
+    <%include base/footer.ejs %>
+</body>
+
+<script src="/javascripts/debate.js"></script>
+
 </html>

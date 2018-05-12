@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var app = express();
+var server = app.listen(3000);
+var io = require('socket.io').listen(server);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -41,5 +43,17 @@ app.use(function(req, res, next) {
   // res.status(err.status || 500);
   // res.render('error');
 // });
+
+io.sockets.on('connection', function(socket) {
+    // 直播辩手编辑，输入内容一旦改变，前端就发送realTimeMsg事件
+    socket.on('realTimeMsg', function({ userId, msg }) {
+        // socket.emit('realTimeMsg', { code:1, data: msg });
+    });
+    
+    // 辩手发表言论
+    socket.on('publish', function({userId, msg}) {
+        
+    });
+});
 
 module.exports = app;
