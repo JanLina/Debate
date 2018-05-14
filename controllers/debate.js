@@ -6,11 +6,6 @@ var User = models.User;
 var Record = models.Record;
 var Statement = models.Statement;
 
-var ws = require("nodejs-websocket")
-ws.connect('ws://localhost:3000/', function() {
-    console.log('connect success');
-});
-
 // 比赛开始后，初始化
 exports.initComp = function(req, res, next) {
     var compId = req.body.compId;
@@ -52,8 +47,9 @@ exports.initComp = function(req, res, next) {
 };
 
 // 辩手发表言论【参数：用户id，言论类型（陈述statement、反驳refute、结辩end），阶段（立论point、自由辩论free）】
-exports.publish = function(req, res, next) {
-    var {compId, userId, stand, type, stage, content} = req.body;
+// exports.publish = function(req, res, next) {
+exports.publish = function(req) {
+    var {compId, userId, stand, type, stage, content} = req;
     var updateInfo = {};
     type = type === 'statement' ? 0 : (type === 'refute' ? 1 : 2);
     var statement = new Statement({
@@ -91,7 +87,7 @@ exports.publish = function(req, res, next) {
                         if (err) {
                             res.send({code: 0, data: err});
                         } else {
-                            res.send({code: 1, recordId: recordId, statementId: newStatement._id, data: result});
+                            // res.send({code: 1, recordId: recordId, statementId: newStatement._id, data: result});
                         }
                     });
                 }
@@ -177,7 +173,7 @@ exports.getResult = function(req, res, next) {
                 if (err) {
                     res.send({code: 0, data: err});
                 } else {
-                    ep.all('mvpUser', 'bestStatement', function(mvpUser, bestStatement, proDebaters) {
+                    ep.all('mvpUser', 'bestStatement', function(mvpUser, bestStatement) {
                         compResult.mvpUser = mvpUser;
                         compResult.bestStatement = bestStatement;
                         // 更新record
@@ -192,9 +188,9 @@ exports.getResult = function(req, res, next) {
                             }
                         });
                     });
-                    // 计算胜方
+                    // 计算获胜方，1表示正方，2表示反方
                     compResult.winner = result.proVote === result.conVote ? 0 : (result.proVote > result.conVote ? 1 : 2);
-                    // 计算MVP
+                    // 计算并获取MVP
                     var mvpUserId = 0;
                     var mvpCalc = 0;
                     var temp = 0;
@@ -216,8 +212,16 @@ exports.getResult = function(req, res, next) {
                             ep.emit('mvpUser', mvpUser);
                         }
                     });
-                    // 获取最佳言论
-                    compResult.bestStatementId = result.freeDebateStatements[2].statementId;  // 最佳言论暂时random
+                    // 计算并获取最佳言论
+                    var bestStatementId = 0;
+                    var attract = 0;
+                    result.debateStatements.forEach(function(value, index) {
+                        if (value.attract > attract) {
+                            attract = value.attract;
+                            bestStatementId = value.statementId;
+                        }
+                    });
+                    compResult.bestStatementId = bestStatementId;
                     Statement.findOne({_id: compResult.bestStatementId}, {userId: 1, content: 1}, function(err, result) {
                         if (err) {
                             res.send({code: 0, data: err});
@@ -226,6 +230,16 @@ exports.getResult = function(req, res, next) {
                             ep.emit('bestStatement', bestStatement);
                         }
                     });
+
+                    // compResult.bestStatementId = result.freeDebateStatements[2].statementId;  // 最佳言论暂时random
+                    // Statement.findOne({_id: compResult.bestStatementId}, {userId: 1, content: 1}, function(err, result) {
+                    //     if (err) {
+                    //         res.send({code: 0, data: err});
+                    //     } else {
+                    //         var bestStatement = {userId: result.userId, content: result.content};
+                    //         ep.emit('bestStatement', bestStatement);
+                    //     }
+                    // });
                 }
             });
         }

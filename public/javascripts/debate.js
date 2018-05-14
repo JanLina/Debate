@@ -1,5 +1,9 @@
+
 $(function(){
     
+    /**常用元素 */
+    $editContent: $(".edit-content")
+
     var liveContent = '\
 <p class="argue">嫉妒可能分为3种紧密关联的情感：羡慕/嫉妒、吃醋以及羞耻。它们都是由于不安全感引起的，在一定程度以内时，都是人正常的天性，是直接在两个个体间发生的情绪，一个人因为某种原因envy另一方。</p>\
                             <p class="conclude">这其实也是我们在看到自己不如他人的时候，为了防止羞耻感而产生的防御机制。</p>\
@@ -21,89 +25,145 @@ $(function(){
 var inputType = new Array("concludeType","pointType","exampleType","argueType");
 var recentInputType = inputType[0];
 var initCondition = true;
+var position = 0;//记录当前编辑中的段落编号
+var range = document.createRange();//光标
+var selection = window.getSelection();//记录选择区域
+var preInputObj = $(".edit-content");
 
-$(".conclude-button").click(function(){//首次点击右下角编辑框
-    if(initCondition == true){
-        var elConclude = '\<p class="conclude" contenteditable="true">--</p>\
-        ';
-        $(".edit-content").append(elConclude);
-        // var $content = $(".edit-content").eq(0);
-        // var $conclude = $content.find('.conclude').eq(0);
-        // $conclude.focus();
-        var elContent = document.getElementsByClassName('edit-content')[0];
-        var elConcludes = elContent.getElementsByClassName('conclude');
-        placeCaretAtEnd(elConcludes[elConcludes.length - 1]);
-    }
-});
+$.fn.setInputPosition = function (styleType){//根据按钮确定新段落的样式类型
+    this.attr("contenteditable","false");//把上一个可编辑元素的编辑属性关闭
+    
+    var inputName = 'editPara'+position.toString();//新段落id
+    var paraHtml = '\<p id="'+inputName+'"></p>\
+    ';//新段落html
+    $(".edit-content").append(paraHtml);//把新段落加入到编辑框中
 
-function placeCaretAtEnd(el) {
-    if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
-        var range = document.createRange();
-        range.selectNodeContents(el, -1);  // 选择节点el的子节点
-        range.collapse(false);  // 指明范围的开始点和结束点不在同一位置，不折叠
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else if (typeof document.body.createTextRange != "undefined") {
-        var textRange = document.body.createTextRange();
-        textRange.moveToElementText(el);
-        textRange.collapse(false);
-        textRange.select();
+    /**编辑新段落的属性 */
+    var inputId = '#'+inputName;
+    $(inputId).addClass(styleType);//根据按钮类型确定新段落样式
+    $(inputId).attr("contenteditable","true");//把新段落设置为可编辑元素
+    $(inputId).css("outline","none");//取消输入边框
+    $(inputId).focus();//把输入焦点确定到新段落上
+
+    preInputObj = $(inputId);
+    position++;
+    
+    if(styleType == "conclude"){
+        recentInputType = inputType[0];
+    }else if(styleType == "point"){
+        recentInputType = inputType[1];
+    }else if(styleType == "example"){
+        recentInputType = inputType[2];
+    }else{
+        recentInputType = inputType[3];
     }
 }
 
+$(".edit-content").click(function(){//首次点击右下角编辑框
+
+    if(initCondition == true){
+
+        $(".edit-content").setInputPosition("conclude");
+
+        /*
+        setTimeout(function(){
+            $(".edit-content .conclude").eq(0).focus();
+        },50);
+        */
+        initCondition = false;
+    }
+});
+
+$("#editcon").on('click','p',function(){//监测点击p的事件，假如点击了p，则把可编辑属性重定位
+    preInputObj.attr("contenteditable","false");
+    $(this).attr("contenteditable","true");
+    $(this).focus();
+
+    preInputObj = $(this);
+});
 
 $(".conclude-button").click(function(){
     if(recentInputType != "concludeType"){
-        
+        preInputObj.setInputPosition("conclude");
     }
 });
 
 $(".point-button").click(function(){
     if(recentInputType != "pointType"){
-
+        preInputObj.setInputPosition("point");
     }
 });
 
 $(".example-button").click(function(){
     if(recentInputType != "exampleType"){
-
+        preInputObj.setInputPosition("example");
     }
 });
 
 $(".argue-button").click(function(){
     if(recentInputType != "argueType"){
-
+        preInputObj.setInputPosition("argue");
     }
 });
 
-window.onload = function(){
+/**设置右下角编辑框输入位置 */
+function setCursorPosition(){
+
+}
+
+});
+
+
+
+// 这是我加的
+window.onload = function() {
     var debate = new Debate();
     debate.init();
 };
-
-var Debate = function(){
+var Debate = function() {
     this.socket = null;
 };
-
 Debate.prototype = {
-    init: function(){
-        this.socket = io.connect();//连接服务器
-
-        //$(".live-content").html(liveContent);
-
-        /*右上角的辩论直播框*/
-        
-        this.socket.on('opponent-content',function(liveContent){ //显示对方辩手的文字直播
-            $(".live-content").html(liveContent);
+    init: function() {
+        var that = this;
+        var userId = '5ae1d6392dd2bb14ac1e4c7b'
+        var $editContent = $('.edit-content').eq(0);
+        var $liveContent = $('.live-content').eq(0);
+        var $publishBtn = $('.edit-publish-button').eq(0);
+        this.socket = io.connect();
+        this.socket.on('connect', function() {
+            console.log('connect success    x0000');
         });
 
-        /*右下角的编辑框*/
+        // [begin] 直播
+        // 接收消息，后端传来的数据结构为{ code: 1, data: data }
+        this.socket.on('realTimeMsg', function(res) {
+            console.log(res.data);
+            console.log(res.data.msg);
+            $liveContent.html(res.data.msg);
+        });
+        // 发送消息
+        $editContent.keyup(function() {
+            var msg = $editContent.html();
+            if (msg.trim().length != 0) {
+                that.socket.emit('realTimeMsg', { userId, msg });
+                return;
+            };
+        });
+        // [end] 直播
 
-
+        // [begin] 辩手发表言论
+        $publishBtn.click(function() {
+            var msg = $editContent.html();
+            if (msg.trim().length != 0) {
+                that.socket.emit('postMsg', { userId, msg });
+                return;
+            };
+        });
+        this.socket.on('newMsg', function(res) {
+            console.log(res.data);
+            console.log(res.data.msg);
+        });
+        // [end] 辩手发表言论
     }
 };
-
-
-
-});

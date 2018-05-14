@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var debate = require('./controllers/debate');
 
 var app = express();
 var server = app.listen(3000);
@@ -33,6 +34,28 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+//  
+io.sockets.on('connection', function(socket) {
+    // if (Math.random() > 0.5) {
+    //     socket.join('room1');
+    // } else {
+    //     socket.join('room2');
+    // }
+    socket.join('room1');
+    // 辩手发表言论
+    socket.on('postMsg', function(data) {
+        // 调用controllers/debate.js的publish方法
+        debate.publish(data);
+        var room = Object.keys(socket.rooms)[1];
+        io.sockets.in(room).emit('newMsg', { code: 1, data: data });
+    });
+    // 直播辩手编辑，实时更新给同一房间所有用户
+    socket.on('realTimeMsg', function(data) {
+        var room = Object.keys(socket.rooms)[1];
+        io.sockets.in(room).emit('realTimeMsg', { code: 1, data: data });
+    });
+});
+
 // error handler
 // app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -43,17 +66,5 @@ app.use(function(req, res, next) {
   // res.status(err.status || 500);
   // res.render('error');
 // });
-
-io.sockets.on('connection', function(socket) {
-    // 直播辩手编辑，输入内容一旦改变，前端就发送realTimeMsg事件
-    socket.on('realTimeMsg', function({ userId, msg }) {
-        // socket.emit('realTimeMsg', { code:1, data: msg });
-    });
-    
-    // 辩手发表言论
-    socket.on('publish', function({userId, msg}) {
-        
-    });
-});
 
 module.exports = app;

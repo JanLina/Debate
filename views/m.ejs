@@ -1,0 +1,45 @@
+<%include base/head.ejs %>
+    <style>
+        body {
+            padding: 20px;
+        }
+        .create-competition .form-control {
+            width: 300px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+  </head>  
+  <body>
+    <div class="realTime">
+        <h3>提交实时信息</h3>
+        <label>用户</label>
+        <input type="text" class="form-control userId">
+        <label>内容</label>
+        <input type="text" class="form-control content">
+        <button class="btn btn-primary">提交</button>
+    </div>
+
+    <%include base/footer.ejs %>
+    <script src="/javascripts/loginAndRegister.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+    <script>
+        $(function() {
+            var ws = io.connect('http://localhost:3000');
+            ws.on('publishSucc', function(msg) {
+                console.log(msg);
+            });
+            ws.on('realTimeMsg', function(msg) {
+                console.log(msg);
+            })
+            $('.realTime .btn').click(function() {
+                var userId = $('.realTime .userId').val();
+                var msg = $('.realTime .content').val();
+                ws.emit('realTimeMsg', { userId: userId, msg: msg });
+            });
+
+            
+        });
+    </script>
+  </body>
+</html>

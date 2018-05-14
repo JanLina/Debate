@@ -47,7 +47,7 @@ exports.create = function (req, res, next) {
 }
 // 获取本周热点（上周投票量）
 exports.getHot = function (req, res, next) {
-    // 筛选出创建时间为上周的，再根据上周投票量进行排
+    // 筛选出创建时间为上周的，再根据上周投票量进行排序
     var lastMonday = calcDate(-7);
     var lastTuesday = calcDate(-6);
     var start = getZero(lastMonday);
@@ -60,35 +60,36 @@ exports.getHot = function (req, res, next) {
         }
     });
 };
-// 获取榜单（点击量），首页一次只展示3个榜单辩题，点击“换一换”，按顺序展示接下来的榜单
-// 可选时间范围：上周、近3月、本年、所有
+
+// 榜单（点击量）
+// 首页的榜单模块一次只展示3个辩题，可选时间范围：上周、近3月、本年
+// 榜单页面每页展示20个辩题，可选时间范围：近3月、本年、不限
 exports.getList = function (req, res, next) {
-    var timeRange = req.body.timeRange;
-    var currentPage = req.body.currentPage;
-    var pageCount = timeRange === '3' ? 20 : 3;
+    var timeRange = +req.body.timeRange;
+    var currentPage = +req.body.currentPage;
+    var pageSize = +req.body.pageSize;
     var findCondition = null;
     var start;
-    if (timeRange === '0') {  // 上周
+    if (timeRange === 0) {  // 上周
         var lastMonday = calcDate(-7);
         start = getZero(lastMonday);
-    } else if (timeRange === '1') {  // 近三月
+    } else if (timeRange === 1) {  // 近3月
         start = new Date();  
         start.setMonth(start.getMonth()-3);
-    } else if (timeRange === '2') {  // 本年
+    } else if (timeRange === 2) {  // 本年
         var today = new Date();
         start = new Date(today.getFullYear(), 0, 1, 0, 0, 0); 
     }
-    if (timeRange === '3') {  // 所有
+    if (timeRange === 3) {  // 不限
         findCondition = {};
     } else {
         findCondition = {createdAt: {$gt: start}};
     }
-    Competition.find(findCondition).sort({'clicks': -1}).exec(function(err, result) {
+    Competition.find(findCondition).sort({'clicks': -1}).skip((currentPage - 1) * pageSize).limit(pageSize).exec(function(err, result) {
         if (err) {
             res.send({code: 0, data: err});
         } else {
-            var r = result.splice((currentPage - 1) * pageCount, pageCount);
-            res.send({code: 1, data: r, start: start, currentPage: currentPage});
+            res.send({code: 1, data: result, start: start, currentPage: currentPage});
         }
     });
 };
@@ -108,10 +109,12 @@ exports.getRecommend = function (req, res, next) {
         }
     });
 };
-// 新辩题立场投票，一次性返回所有下周的新辩题
+// 获取新辩题，一次性返回所有下周的新辩题
 exports.getNew = function (req, res, next) {
+    // 获取本周一、本周二的Date对象
     var monday = calcDate(0);
     var tuesday = calcDate(1);
+    // 获取本周一、本周二零点时的Date对象
     var start = getZero(monday);
     var end = getZero(tuesday);
     Competition.find({createdAt: {$gt: start, $lt: end}}, function(err, result) {

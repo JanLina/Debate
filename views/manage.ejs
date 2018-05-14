@@ -46,6 +46,8 @@
         <br>
         <label for="currentPage">要获取的页数</label>
         <input type="number" class="form-control" id="currentPage">
+        <label for="pageSize">页面容量</label>
+        <input type="number" class="form-control" id="pageSize">
         <button class="btn btn-primary">获取榜单</button>
     </div>
     <div class="get-recommend">
@@ -117,8 +119,14 @@
 
     <%include base/footer.ejs %>
     <script src="/javascripts/loginAndRegister.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
     <script>
         $(function() {
+            var ws = io.connect('http://localhost:3000');
+            ws.on('newMsg', function(data) {
+                console.log('newMsg: ');
+                console.log(data);
+            });
             $('.get-result .btn').click(function() {
                 var compId = $('.get-result .compId').eq(0).val();
                 $.post(config.prefixPath + '/debate/getResult', {compId: compId}, function(result, staus) {
@@ -157,9 +165,10 @@
                     stage: stage,
                     content: content,
                 };
-                $.post(config.prefixPath + '/debate/publish', query, function(result, staus) {
-                    console.log(result);
-                });
+                // $.post(config.prefixPath + '/debate/publish', query, function(result, staus) {
+                //     console.log(result);
+                // });
+                ws.emit('postMsg', query);
             });
             
             $('.init-comp .btn').click(function() {
@@ -201,9 +210,8 @@
             $('.get-list .btn').click(function() {
                 var timeRange = $('.get-list select option:selected').val();
                 var currentPage = $('#currentPage').val();
-                console.log(timeRange);
-                console.log(currentPage);
-                $.post(config.prefixPath + '/competition/getList', {timeRange: timeRange, currentPage: currentPage}, function(result, status) {
+                var pageSize = $('#pageSize').val();
+                $.post(config.prefixPath + '/competition/getList', {timeRange: timeRange, currentPage: currentPage, pageSize: pageSize}, function(result, status) {
                     console.log(result);
                 });
             });
