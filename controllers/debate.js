@@ -6,50 +6,65 @@ var User = models.User;
 var Record = models.Record;
 var Statement = models.Statement;
 
+
 // 比赛开始后，初始化
 exports.initComp = function(req, res, next) {
     var compId = req.body.compId;
-    // 初始化record
-    // 比赛开始后，才决定一二三辩，将一二三辩按顺序存到record
-    var proDebaters = req.body.proDebaters.split(',');
-    var conDebaters = req.body.conDebaters.split(',');
-    var record = new Record({
-        competitionId: compId,
-        proDebaters: proDebaters,
-        conDebaters: conDebaters,
-        debateStatements: [],
-        freeDebateStatements: [],
-        proEnd: -1,
-        conEnd: -1,
-        proVote: 0,
-        conVote: 0,
-        changeSide: [],
-        winner: -1,
-        mvpUserId: -1,
-        bestStatement: -1,
-        comments: []
-    });
-    record.save(function (err, result) {
-        if (err) {
-            res.send({code: 0, data: err});
-        } else {
-            var newRecord = result;
-            // 更新比赛的record的id
-            Competition.update({_id: compId}, {recordId: newRecord._id}, {upsert: true}, function(err, result) {
-                if (err) {
-                    res.send({code: 0, data: err});
-                } else {
-                    res.send({code: 1, compId: compId, recordId: newRecord._id, data: newRecord});
-                }
-            });
-        }
+    var proDebaters;
+    var conDebaters;
+    var newRecord;
+    // var proDebaters = req.body.proDebaters.split(',');
+    // var conDebaters = req.body.conDebaters.split(',');
+    Competition.findOne({_id: compId}, {proDebaters: 1, conDebaters: 1}, function(err, result) {
+        proDebaters = result.proDebaters;
+        conDebaters = result.conDebaters;
+        // 这里对proDebaters和conDebaters进行排序
+        // ...
+        var record = new Record({
+            competitionId: compId,
+            proDebaters: proDebaters,
+            conDebaters: conDebaters,
+            debateStatements: [],
+            freeDebateStatements: [],
+            proEnd: -1,
+            conEnd: -1,
+            proVote: 0,
+            conVote: 0,
+            changeSide: [],
+            winner: -1,
+            mvpUserId: -1,
+            bestStatement: -1,
+            comments: []
+        });
+        record.save(function (err, result) {
+            if (err) {
+                res.send({code: 0, data: err});
+            } else {
+                newRecord = result;
+                // 更新比赛的record的id
+                Competition.update({_id: compId}, {recordId: newRecord._id, proDebaters: proDebaters, conDebaters: conDebaters}, {upsert: true}, function(err, result) {
+                    if (err) {
+                        res.send({code: 0, data: err});
+                    } else {
+                        res.send({code: 1, compId: compId, recordId: newRecord._id, newRecord: newRecord});
+                    }
+                });
+            }
+        });
     });
 };
 
+progress = function() {
+    // 在publish中调用这个方法
+    // 辩手发表言论后，客户端发来通知，隔5s后，广播“下一轮发言开始”
+    // 参数：next: true，客户端只要告诉服务端要进入下一阶段了，具体进入哪一阶段由服务端返回给客户端，competition需要一个字段来控制比赛进程
+
+}
+
 // 辩手发表言论【参数：用户id，言论类型（陈述statement、反驳refute、结辩end），阶段（立论point、自由辩论free）】
 // exports.publish = function(req, res, next) {
-exports.publish = function(req) {
-    var {compId, userId, stand, type, stage, content} = req;
+exports.publish = function(params) {
+    var {compId, userId, upsert, stand, type, stage, content} = params;
     var updateInfo = {};
     type = type === 'statement' ? 0 : (type === 'refute' ? 1 : 2);
     var statement = new Statement({
@@ -58,9 +73,10 @@ exports.publish = function(req) {
         userId: userId,
         content: content
     });
+    // 保存言论
     statement.save(function(err, result) {
         if (err) {
-            res.send({code: 0, data: err});
+            // res.send({code: 0, data: err});
         } else {
             var newStatement = result;
             if (type === 2) {  // 结辩
@@ -78,14 +94,15 @@ exports.publish = function(req) {
                     $push: {freeDebateStatements: {userId: userId, statementId: newStatement._id}}
                 };
             }
+            // 更新record
             Competition.findOne({_id: compId}, {recordId: 1}, function(err, result) {
                 if (err) {
-                    res.send({code: 0, data: err});
+                    // res.send({code: 0, data: err});
                 } else {
                     var recordId = result.recordId;
                     Record.update({_id: recordId}, updateInfo, {upsert: true}, function(err, result) {  // 更新辩论赛对应的比赛记录
                         if (err) {
-                            res.send({code: 0, data: err});
+                            // res.send({code: 0, data: err});
                         } else {
                             // res.send({code: 1, recordId: recordId, statementId: newStatement._id, data: result});
                         }
@@ -155,9 +172,9 @@ exports.changeSide = function(req, res, next) {
 };
 
 // 观众评论
-exports.publishComment = function(req, res, next) {
+// exports.publishComment = function(req, res, next) {
     
-};
+// };
 
 // 获取比赛结果
 exports.getResult = function(req, res, next) {

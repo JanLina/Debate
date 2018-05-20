@@ -36,23 +36,33 @@ app.use(function(req, res, next) {
 
 //  
 io.sockets.on('connection', function(socket) {
-    // if (Math.random() > 0.5) {
-    //     socket.join('room1');
-    // } else {
-    //     socket.join('room2');
-    // }
-    socket.join('room1');
+    // 如果comp为true，表示用户进入了一场辩论赛，加入房间competition，由于同一时间只有一场辩论赛在进行，所以统一为“competition”房间即可
+    socket.on('initRoom', function(data) {
+        if (data.comp) {
+            socket.join('competition');
+        }
+    });
+    
+    // 比赛开始
+    socket.on('begin', function() {
+        // 到达比赛开始时间，向比赛相关的所有客户端广播“比赛开始”
+        // testing -- 客户端传来比赛开始的信号，向比赛相关的所有客户端广播“比赛开始”，即正方第一辩手开始发言
+        io.sockets.in('competition').emit('begin');
+    });
     // 辩手发表言论
     socket.on('postMsg', function(data) {
         // 调用controllers/debate.js的publish方法
         debate.publish(data);
         var room = Object.keys(socket.rooms)[1];
-        io.sockets.in(room).emit('newMsg', { code: 1, data: data });
+        setTimeout(() => {
+            io.sockets.in(room).emit('begin');
+        }, 3000);
+        io.sockets.in(room).emit('newMsg', { code: 1, data: data })
     });
     // 直播辩手编辑，实时更新给同一房间所有用户
     socket.on('realTimeMsg', function(data) {
         var room = Object.keys(socket.rooms)[1];
-        io.sockets.in(room).emit('realTimeMsg', { code: 1, data: data });
+        io.sockets.in(room).emit('realTimeMsg', { code: 1, data: data, room: room });
     });
 });
 

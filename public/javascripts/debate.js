@@ -32,7 +32,7 @@ var preInputObj = $(".edit-content");
 
 $.fn.setInputPosition = function (styleType){//根据按钮确定新段落的样式类型
     this.attr("contenteditable","false");//把上一个可编辑元素的编辑属性关闭
-    
+
     var inputName = 'editPara'+position.toString();//新段落id
     var paraHtml = '\<p id="'+inputName+'"></p>\
     ';//新段落html
@@ -65,11 +65,9 @@ $(".edit-content").click(function(){//首次点击右下角编辑框
 
         $(".edit-content").setInputPosition("conclude");
 
-        /*
-        setTimeout(function(){
-            $(".edit-content .conclude").eq(0).focus();
-        },50);
-        */
+        /**倒计时的调用方式
+        $("#edit-count-down").timeCountDown(90);
+         */
         initCondition = false;
     }
 });
@@ -116,54 +114,54 @@ function setCursorPosition(){
 
 
 // 这是我加的
-window.onload = function() {
-    var debate = new Debate();
-    debate.init();
-};
-var Debate = function() {
-    this.socket = null;
-};
-Debate.prototype = {
-    init: function() {
-        var that = this;
-        var userId = '5ae1d6392dd2bb14ac1e4c7b'
-        var $editContent = $('.edit-content').eq(0);
-        var $liveContent = $('.live-content').eq(0);
-        var $publishBtn = $('.edit-publish-button').eq(0);
-        this.socket = io.connect();
-        this.socket.on('connect', function() {
-            console.log('connect success    x0000');
-        });
+// window.onload = function() {
+//     var debate = new Debate();
+//     debate.init();
+// };
+// var Debate = function() {
+//     this.socket = null;
+// };
+// Debate.prototype = {
+//     init: function() {
+//         var that = this;
+//         var userId = '5ae1d6392dd2bb14ac1e4c7b'
+//         var $editContent = $('.edit-content').eq(0);
+//         var $liveContent = $('.live-content').eq(0);
+//         var $publishBtn = $('.edit-publish-button').eq(0);
+//         this.socket = io.connect();
+//         this.socket.on('connect', function() {
+//             console.log('connect success    x0000');
+//         });
 
-        // [begin] 直播
-        // 接收消息，后端传来的数据结构为{ code: 1, data: data }
-        this.socket.on('realTimeMsg', function(res) {
-            console.log(res.data);
-            console.log(res.data.msg);
-            $liveContent.html(res.data.msg);
-        });
-        // 发送消息
-        $editContent.keyup(function() {
-            var msg = $editContent.html();
-            if (msg.trim().length != 0) {
-                that.socket.emit('realTimeMsg', { userId, msg });
-                return;
-            };
-        });
-        // [end] 直播
+//         // [begin] 直播
+//         // 接收消息，后端传来的数据结构为{ code: 1, data: data }
+//         this.socket.on('realTimeMsg', function(res) {
+//             console.log(res.data);
+//             console.log(res.data.msg);
+//             $liveContent.html(res.data.msg);
+//         });
+//         // 发送消息
+//         $editContent.keyup(function() {
+//             var msg = $editContent.html();
+//             if (msg.trim().length != 0) {
+//                 that.socket.emit('realTimeMsg', { userId, msg });
+//                 return;
+//             };
+//         });
+//         // [end] 直播
 
-        // [begin] 辩手发表言论
-        $publishBtn.click(function() {
-            var msg = $editContent.html();
-            if (msg.trim().length != 0) {
-                that.socket.emit('postMsg', { userId, msg });
-                return;
-            };
-        });
-        this.socket.on('newMsg', function(res) {
-            console.log(res.data);
-            console.log(res.data.msg);
-        });
-        // [end] 辩手发表言论
-    }
-};
+//         // [begin] 辩手发表言论
+//         $publishBtn.click(function() {
+//             var msg = $editContent.html();
+//             if (msg.trim().length != 0) {
+//                 that.socket.emit('postMsg', { userId, msg });
+//                 return;
+//             };
+//         });
+//         this.socket.on('newMsg', function(res) {
+//             console.log(res.data);
+//             console.log(res.data.msg);
+//         });
+//         // [end] 辩手发表言论
+//     }
+// };

@@ -78,14 +78,15 @@ exports.register = function (req, res, next) {
 // 查找User
 exports.login = function (req, res, next) {
     var info = {
-        phone: req.body.phone,
+        // phone: req.body.phone,
+        userName: req.body.userName,
         password: req.body.password
     };
-    User.find(info, function(err, result) {
+    User.findOne(info, function(err, result) {
         if (err) {
             res.send({code: 0, data: err});
-        } else if (!result.length) {
-            res.send({code: 0, data: { message: '该手机号未注册或密码错误' }});
+        } else if (!result) {
+            res.send({code: 0, data: { message: '该用户未注册或密码错误' }});
         } else {
             res.send({code: 1, data: result});
         }

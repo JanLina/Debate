@@ -128,18 +128,27 @@ exports.getNew = function (req, res, next) {
 // 进入/回顾辩论赛
 exports.getDetail = function (req, res, next) {
     var ep = new EventProxy();
-    var compId = req.body.compId;
+    var compId;
+    var findCondition;
+    if (req.body.random) {
+        findCondition = {};
+    } else {
+        compId = req.body.compId;
+        findCondition = {_id: compId}
+    }
     var comp = null;
-    Competition.findOne({_id: compId}, function(err, result) {
+    Competition.findOne(findCondition, function(err, result) {
         if (err) {
-            res.send({code: 0, compId: compId, data: err});
+            res.send({code: 0, data: err});
         } else {
-            comp = result;
+            comp = JSON.parse(JSON.stringify(result));
+            compId = result._id;
             ep.all('getRecord', 'getConDebaters', 'getProDebaters', function(record, conDebaters, proDebaters) {
                 comp.record = record;
                 comp.conDebaters = conDebaters;
                 comp.proDebaters = proDebaters;
-                res.send({code: 1, compId: compId, data: comp});
+                // res.render('debate', { title: '辩论赛', compId: compId, data: comp });
+                res.send({code: 1, compId: compId, nativeComp: result, data: comp});
             });
             // 若比赛已结束，获取比赛记录
             if (comp.status === 2) {
@@ -183,3 +192,46 @@ exports.getDetail = function (req, res, next) {
 // 收藏辩论赛
 
 // 取消收藏辩论赛
+
+
+
+
+
+
+// Testing
+exports.createT = function (req, res, next) {
+    var userName = req.body.userName.split(',');
+    var password = req.body.password.split(',');
+    var title = req.body.title;
+    var profiles = req.body.profiles.split(',');
+    var debaters = [];
+    var counter = 0;
+    // 创建用户
+    userName.forEach(function(item, index) {
+        var user = new User({
+            userName: item,
+            password: password[index]
+        });
+        var count = 0;
+        user.save(function(err, result) {
+            debaters[index] = result._id;
+            counter++;
+            if (counter === 6) {
+                // 创建辩论赛
+                var competition = new Competition({
+                    title: title,
+                    proDebaters: debaters.slice(0, 3),
+                    conDebaters: debaters.slice(3, 6),
+                    profiles: profiles
+                });
+                competition.save(function (err, result) {
+                    if (err) {
+                        res.send({code: 0, data: err});
+                    } else {
+                        res.send({code: 1, data: result});
+                    }
+                }); 
+            }
+        });
+    });
+}

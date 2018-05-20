@@ -23,12 +23,12 @@ router.get('/debate', function(req, res, next) {
 
 
 // user
+router.post('/debate/initComp', debate.initComp);
 router.post('/user/register', user.register);
 router.post('/user/login', user.login);
 router.post('/user/changeIntro', user.changeIntro);
 
 // debate
-router.post('/debate/initComp', debate.initComp);
 router.post('/debate/publish', debate.publish);
 router.post('/debate/changeSide', debate.changeSide);
 router.post('/debate/getResult', debate.getResult);
@@ -45,6 +45,8 @@ router.get('/m', function(req, res, next) {
   res.render('m', { title: 'WebSocket测试' });
 });
 router.post('/competition/create', competition.create);
+router.post('/competition/createT', competition.createT);
+
 router.post('/competition/getList', competition.getList);
 router.get('/competition/getRecommend', competition.getRecommend);
 router.get('/competition/getHot', competition.getHot);

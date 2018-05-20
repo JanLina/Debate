@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var statementSchema = new Schema({
     competitionId: String,
     userId: String,
-    type: Number,  // 0表示陈述，1表示反驳，2表示结辩
+    type: Number,  // 0表示陈述，1表示反驳，2表示结辩0表示陈述，1表示反驳，2表示结辩
     // speakingTime: Number,  // 发言花费时间
     refute: Array,  // ['', ''] 反驳
     refutePart: Array,  // ['', ''] 反驳的句子
