@@ -49,15 +49,31 @@ io.sockets.on('connection', function(socket) {
         // testing -- 客户端传来比赛开始的信号，向比赛相关的所有客户端广播“比赛开始”，即正方第一辩手开始发言
         io.sockets.in('competition').emit('begin');
     });
-    // 辩手发表言论
+    // 辩手发表言论  参数：compId, userId, stand, num, type, stage, content
+    var statements = [];
+    var counter = 0;
     socket.on('postMsg', function(data) {
         // 调用controllers/debate.js的publish方法
         debate.publish(data);
         var room = Object.keys(socket.rooms)[1];
-        setTimeout(() => {
-            io.sockets.in(room).emit('begin');
-        }, 3000);
-        io.sockets.in(room).emit('newMsg', { code: 1, data: data })
+        var delay = 0;
+        if (data.order === -1) {  // 立论阶段
+            io.sockets.in(room).emit('newMsg', { code: 1, data: data });
+            if (data.num === 3 && data.stand === 2) {  // 这个发言后，将是自由辩论
+                delay = 5000;
+            } else {
+                delay = 3000;
+            }
+            setTimeout(() => {
+                io.sockets.in(room).emit('begin');
+            }, delay);
+        } else {
+            statements[data.order] = data.content;
+            counter ++;
+            // if (counter === 3) {
+                io.sockets.in(room).emit('newMsg', { counter: counter, code: 1, data: data, statements: statements })
+            // }
+        }
     });
     // 直播辩手编辑，实时更新给同一房间所有用户
     socket.on('realTimeMsg', function(data) {
