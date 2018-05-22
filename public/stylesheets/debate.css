@@ -52,7 +52,8 @@
     background:#ffffff;
     box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
     width:614px;
-    height:900px;
+    /* height:900px; */
+    min-height: 630px;
     float: left;
     text-align: center;
 }
@@ -450,6 +451,11 @@
 }
 
 /* M */
+#start {
+    position: absolute;
+    top: 160px;
+    left: 100px;
+}
 .live-box .debater-switch {
     width: 210px;
     padding-bottom: 3px;
@@ -471,4 +477,25 @@
     overflow-y: scroll;
     height: 180px;
     font-size: 12px;
+}
+.edit-content>p {
+    outline: none;
+}
+
+/* Test */
+.main-wrapper .main {
+    width: 80%;
+}
+.debate-box {
+    width: 1000px;
+}
+.debate-box .debate-progress {
+    width: 85%;
+}
+.debate-progress .debate-content .content-block {
+    width: 80%;
+}
+.debate-progress .debate-content .content-block .content {
+    width: 90%;
+    text-align: left;
 }

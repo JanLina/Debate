@@ -6,8 +6,8 @@
 
 <body>
     <%include base/header.ejs %>
+    <button id="start" class="btn btn-primary">Test: 开始比赛</button>
     <div class="main-wrapper">
-        <button id="start">开始比赛</button>
         <div class="main">
             <div class="title">
                 <img src="images/debate-title-background.png" alt="">
@@ -62,7 +62,7 @@
             <div class="debater-view">
                 <div class="live-box">
                     <div class="live-box-content">
-                        <ol class="breadcrumb debater-switch fl">
+                        <ol class="breadcrumb debater-switch fl hide">
                             <li class="active">一辩</li>
                             <li>二辩</li>
                             <li>三辩</li>
@@ -71,8 +71,8 @@
                             <div id="live-count-down" class="count-down fr">倒计时：--</div>
                         </div>
                         <div class="live-box-line line"></div>
-                        <div class="live-content hide"></div>
-                        <div class="live-content-free">a</div>
+                        <div class="live-content"></div>
+                        <div class="live-content-free hide">a</div>
                         <div class="live-content-free hide">b</div>
                         <div class="live-content-free hide">c</div>
                         <p class="word-count fr">字数：220／250</p>
@@ -98,7 +98,7 @@
                         <div class="edit-button-line line"></div>
                     </div>
 
-                    <div id="editcon" class="edit-content" contenteditable="true" >
+                    <div id="editcon" class="edit-content">
                     </div>
                     <input type="button" value="发表" class="edit-publish-button fr">
                     <p class="word-count">字数：220／250</p>
@@ -109,6 +109,6 @@
     <%include base/footer.ejs %>
 </body>
 
-<script src="/javascripts/debate.js"></script>
+<!-- <script src="/javascripts/debate.js"></script> -->
 <script src="/javascripts/debateM.js"></script>
 </html>

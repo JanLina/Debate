@@ -15,6 +15,7 @@ $(function() {
         socket: null,
         timer: null,
         els: {
+            $typeBtn: $('.type-button').eq(0),
             $startBtn: $('#start'),
             $editContent: $('.edit-content').eq(0),
             $liveContent: $('.live-content').eq(0),
@@ -43,6 +44,36 @@ $(function() {
             this.els.$debaterSwitch.click(function(ev) {
                 that.switch(ev);
             });
+            // 切换发言类型
+            this.els.$typeBtn.click(function(ev) {
+                that.switchType(ev);
+            });
+        },
+        switchType: function(ev) {
+            var $target = $(ev.target);
+            var c = '';
+            var el = '';
+            var $el = null;
+            switch ($target.val()) {
+                case '总结':
+                    c = 'conclude';
+                    break;
+                case '分点':
+                    c = 'point';
+                    break;
+                case '例子':
+                    c = 'example';
+                    break;
+                case '反驳':
+                    c = 'argue';
+                    break;
+                default:
+                    break;
+            }
+            el = `<p class="${c}" contenteditable="true">·</p>`;
+            $el = $(el);
+            this.els.$editContent.append($el);
+            $el.focus();
         },
         initCompInfo: function() {
             var that = this;
@@ -92,8 +123,8 @@ $(function() {
                 });
             }
             console.log('当前用户发言', turn, 'x0002');
-            this.els.$editContent.attr('contenteditable', turn);  // 只有当前辩手可以发言
-            this.els.$publishBtn.attr('disabled', !turn);
+            this.els.$publishBtn.attr('disabled', !turn);  // 只有当前辩手可以发言
+            this.els.$typeBtn.find('input').attr('disabled', !turn);
             if (turn) {
                 this.timer = this.els.$editCountDown.timeCountDown(90);
             } else {
@@ -103,7 +134,9 @@ $(function() {
         publish: function() {
             // 参数：compId, userId, stand, num, type, stage, content
             var msg = this.els.$editContent.html();
+            msg = msg.replace(' contenteditable="true"', '');  // 传递的内容应是不可编辑的
             var progress = this.data.progress;
+            console.log('postMsg', msg, 'x0006');
             if (msg.trim().length != 0) {
                 this.socket.emit('postMsg', {
                     compId: this.data.compId,
@@ -116,6 +149,8 @@ $(function() {
                     order: this.data.currentUser.order
                 });
             };
+            this.els.$editContent.html('');
+            this.els.$publishBtn.attr('disabled', false);
         },
         setSocket: function() {
             var that = this;
@@ -142,6 +177,7 @@ $(function() {
             });
             that.els.$editContent.keyup(function() {
                 var msg = that.els.$editContent.html();
+                msg = msg.replace(' contenteditable="true"', '');  // 传递的内容应是不可编辑的
                 if (msg.trim().length != 0) {
                     that.socket.emit('realTimeMsg', { userId: progress.userId, order: that.data.currentUser.order, msg });
                     return;
@@ -158,7 +194,9 @@ $(function() {
             var that = this;
             var data = res.data;
             if (data.stage === 'free') {
-                data.content = res.statements.join('');
+                data.content = '一辩：' + res.statements[0] 
+                             + '二辩：' + res.statements[1]
+                             + '三辩：' + res.statements[2];
             }
             var statement = `<div class="${data.stand === 1 ? 'positive' : 'negative'}-debate clearfix">
                                 <div class="debater-info song-font">
@@ -188,12 +226,18 @@ $(function() {
             var progress = that.data.progress;
             var progressNew = JSON.parse(JSON.stringify(that.data.progress));
             if (progress.stage === 'point') {  // 立论阶段
-                progressNew.userId = progress.stand === 1 ? that.data.compData.conDebaters[progress.num - 1] : that.data.compData.proDebaters[progress.num]
+                progressNew.userId = progress.stand === 1 ? that.data.compData.conDebaters[progress.num - 1] : that.data.compData.proDebaters[progress.num];
+                progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
+                progressNew.stand = progress.stand === 1 ? 2 : 1;
                 if (progress.num === 3 && progress.stand === 2) { // 下一个发言是自由辩论
                     console.log('free  x0001');
+                    that.els.$debaterSwitch.removeClass('hide');
+                    that.els.$liveContent.addClass('hide');
+                    that.els.$liveContentFrees.eq(0).removeClass('hide');
                     progressNew.type = 0;
                     progressNew.stage = 'free';
                     progressNew.stand = 1;
+                    progressNew.userId = '';
                     progressNew.num = 1;  // 记录这是第几个循环
                     var freeHeader = `<div class="free-debate">
                                         <div class="line free-sign-line fl"></div>
@@ -207,13 +251,25 @@ $(function() {
                         if (user._id === that.data.currentUser.id) {
                             that.data.currentUser.order = index;
                         }
-                    })
+                    });
+                    that.data.compData.conDebaters.forEach(function(user, index) {
+                        if (user._id === that.data.currentUser.id) {
+                            that.data.currentUser.order = index;
+                        }
+                    });
                 }
             } else {  // 自由辩论
-                
+                console.log(progress.stand, progress.num, 'x0003');
+                // if (progress.stand === 2 && progress.num === 3) {  // 自由辩论结束，取比赛结果
+                if (progress.stand === 2 && progress.num === 1) {
+                    $.post(config.prefixPath + '/debate/getResult', {compId: that.data.compId}, function(res) {
+                        console.log('result', res, 'x0005');
+                    });
+                    return;
+                }
+                progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
+                progressNew.stand = progress.stand === 1 ? 2 : 1;
             }
-            progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
-            progressNew.stand = progress.stand === 1 ? 2 : 1;
             that.data.progress = progressNew;
         },
         switch: function(ev) {
