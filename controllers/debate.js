@@ -66,7 +66,6 @@ progress = function() {
 exports.publish = function(params) {
     var {compId, userId, upsert, stand, type, stage, content} = params;
     var updateInfo = {};
-    type = type === 'statement' ? 0 : (type === 'refute' ? 1 : 2);
     var statement = new Statement({
         competitionId: compId,
         type: type,
@@ -75,6 +74,7 @@ exports.publish = function(params) {
     });
     // 保存言论
     statement.save(function(err, result) {
+        // ...
         if (err) {
             // res.send({code: 0, data: err});
         } else {
@@ -96,18 +96,9 @@ exports.publish = function(params) {
             }
             // 更新record
             Competition.findOne({_id: compId}, {recordId: 1}, function(err, result) {
-                if (err) {
-                    // res.send({code: 0, data: err});
-                } else {
-                    var recordId = result.recordId;
-                    Record.update({_id: recordId}, updateInfo, {upsert: true}, function(err, result) {  // 更新辩论赛对应的比赛记录
-                        if (err) {
-                            // res.send({code: 0, data: err});
-                        } else {
-                            // res.send({code: 1, recordId: recordId, statementId: newStatement._id, data: result});
-                        }
-                    });
-                }
+                // 更新辩论赛对应的比赛记录
+                var recordId = result.recordId;
+                Record.update({_id: recordId}, updateInfo, {upsert: true}, function(err, result) {});
             });
         }   
     });
@@ -208,27 +199,27 @@ exports.getResult = function(req, res, next) {
                     // 计算获胜方，1表示正方，2表示反方
                     compResult.winner = result.proVote === result.conVote ? 0 : (result.proVote > result.conVote ? 1 : 2);
                     // 计算并获取MVP
-                    var mvpUserId = 0;
-                    var mvpCalc = 0;
-                    var temp = 0;
-                    result.changeSide.forEach(function(value, index) {
-                        temp = value.attract - value.leave;
-                        mvpUserId = mvpCalc < temp ? value.userId : mvpUserId;
-                        mvpCalc = mvpCalc < temp ? temp : mvpCalc;
-                    });
-                    compResult.mvpCalc = mvpCalc;
-                    User.findOne({_id: mvpUserId}, {userName: 1, icon: 1}, function(err, result) {
-                        if (err) {
-                            res.send({code: 0, data: err});
-                        } else {
-                            var mvpUser = {
-                                id: mvpUserId,
-                                userName: result.userName,
-                                icon: result.icon
-                            }
-                            ep.emit('mvpUser', mvpUser);
-                        }
-                    });
+                    // var mvpUserId = 0;
+                    // var mvpCalc = 0;
+                    // var temp = 0;
+                    // result.changeSide.forEach(function(value, index) {
+                    //     temp = value.attract - value.leave;
+                    //     mvpUserId = mvpCalc < temp ? value.userId : mvpUserId;
+                    //     mvpCalc = mvpCalc < temp ? temp : mvpCalc;
+                    // });
+                    // compResult.mvpCalc = mvpCalc;
+                    // User.findOne({_id: mvpUserId}, {userName: 1, icon: 1}, function(err, result) {
+                    //     if (err) {
+                    //         res.send({code: 0, data: err});
+                    //     } else {
+                    //         var mvpUser = {
+                    //             id: mvpUserId,
+                    //             userName: result.userName,
+                    //             icon: result.icon
+                    //         }
+                    //         ep.emit('mvpUser', mvpUser);
+                    //     }
+                    // });
                     // 计算并获取最佳言论
                     var bestStatementId = 0;
                     var attract = 0;

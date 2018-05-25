@@ -112,7 +112,7 @@ $(function() {
             var turn = false;
             var progress = this.data.progress;
             var temp = '';
-            if (progress.stage === 'point') {
+            if (progress.stage === 'point' || progress.type === 2) {  // 立论阶段或结辩
                 turn = this.data.currentUser.id === progress.userId._id;
             } else {
                 temp = progress.stand === 1 ? 'proDebaters' : 'conDebaters';
@@ -136,7 +136,7 @@ $(function() {
             var msg = this.els.$editContent.html();
             msg = msg.replace(' contenteditable="true"', '');  // 传递的内容应是不可编辑的
             var progress = this.data.progress;
-            console.log('postMsg', msg, 'x0006');
+            console.log('postMsg', progress.stage, progress.type, 'x0006');
             if (msg.trim().length != 0) {
                 this.socket.emit('postMsg', {
                     compId: this.data.compId,
@@ -204,7 +204,7 @@ $(function() {
                                     <span class="dot"></span>
                                     <span class="role">${data.stand === 1 ? '正方' : '反方'}${ data.stage === 'point' ? (data.num === 1 ? '一辩' : (data.num === 2 ? '二辩' : '三辩')) : ''}</span>
                                     <span class="dot"></span>
-                                    <span class="stage">${data.stage === 'point' ? '立论' : '自由辩论'}</span>
+                                    <span class="stage">${data.type === 2 ? '结辩' : (data.stage === 'point' ? '立论' : '自由辩论')}</span>
                                 </div>
                                 <div class="debate-content">
                                     <div class="debater-avatar ${data.stand === 1 ? 'fl' : 'fr'}">
@@ -258,17 +258,28 @@ $(function() {
                         }
                     });
                 }
-            } else {  // 自由辩论
+            } else if (progress.stage === 'free') {  // 自由辩论
                 console.log(progress.stand, progress.num, 'x0003');
-                // if (progress.stand === 2 && progress.num === 3) {  // 自由辩论结束，取比赛结果
+                progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
+                progressNew.stand = progress.stand === 1 ? 2 : 1;
+                // if (progress.stand === 2 && progress.num === 3) {  // 自由辩论结束，进入结辩
                 if (progress.stand === 2 && progress.num === 1) {
+                    progressNew.stage = '';
+                    progressNew.type = 2;
+                    progressNew.num = 1;
+                    progressNew.stand = 1;
+                    progressNew.userId = that.data.compData.proDebaters[2];  // 由三辩进行结辩
+                }
+            } else {  // 结辩
+                if (progress.stand === 2) {  // 结辩结束，获取比赛结果
+                    that.els.$publishBtn.attr('disabled', true);
                     $.post(config.prefixPath + '/debate/getResult', {compId: that.data.compId}, function(res) {
                         console.log('result', res, 'x0005');
                     });
                     return;
                 }
-                progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
-                progressNew.stand = progress.stand === 1 ? 2 : 1;
+                progressNew.userId = that.data.compData.conDebaters[2];
+                progressNew.stand = 2;
             }
             that.data.progress = progressNew;
         },

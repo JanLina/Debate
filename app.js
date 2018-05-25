@@ -52,10 +52,9 @@ io.sockets.on('connection', function(socket) {
         io.sockets.in('competition').emit('begin');
     });
 
-    // 辩手发表言论  参数：compId, userId, stand, num, type, stage, content
+    // 辩手发表言论  参数：compId, userId, stand, num, order, type, stage, content
     socket.on('postMsg', function(data) {
-        // 调用controllers/debate.js的publish方法
-        debate.publish(data);
+        debate.publish(data);  // 调用controllers/debate.js的publish方法
         var room = Object.keys(socket.rooms)[1];
         var delay = 0;
         if (data.stage === 'point') {  // 立论阶段
@@ -65,27 +64,33 @@ io.sockets.on('connection', function(socket) {
             } else {
                 delay = 3000;
             }
-            // 通知客户端开始下一轮倒计时
             setTimeout(() => {
                 io.sockets.in(room).emit('begin');
             }, delay);
-        } else {  // 自由辩论阶段
+        } else if (data.stage === 'free') {  // 自由辩论阶段
             statements[data.order] = data.content;
             counter ++;
-            // if (counter === 3) {
+            if (counter === 3) {
                 statements.forEach(function(statement, index) {
                     if (!statement) {
                         statements[index] = ' ';
                     }
                 });
-                io.sockets.in(room).emit('newMsg', { counter: counter, code: 1, data: data, statements: statements });
+                io.sockets.in(room).emit('newMsg', { code: 1, data: data, statements: statements });
                 counter = 0;
                 statements = [];
-                // 通知客户端开始下一轮倒计时
                 setTimeout(() => {
                     io.sockets.in(room).emit('begin');
                 }, 3000);
-            // }
+            }
+        } else {  // 结辩
+            io.sockets.in(room).emit('newMsg', { code: 1, data: data });
+            if (data.stand === 2) {
+                return;
+            }
+            setTimeout(() => {
+                io.sockets.in(room).emit('begin');
+            }, 3000);
         }
     });
     

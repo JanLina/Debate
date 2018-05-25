@@ -1,0 +1,473 @@
+.body{
+    background:rgba(12,130,244,0.04);
+}
+
+.main{
+    width: 1013px;
+    margin-left: auto;
+    margin-right: auto; 
+}
+
+.content{
+    width:700px;
+}
+
+.hot{
+    width:683px;
+    height:900px;
+    position: relative;
+    margin-top: 15px;
+}
+
+.hot h2{
+    font-size: 26px;
+    font-weight: 200;
+    letter-spacing: 5px;
+}
+
+.hot ul{
+    margin-top: 20px;
+    padding-left: 0;
+}
+
+.hot .single-hot-debate{
+    background:#ffffff;
+    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
+    width: 100%;
+    height:470px;
+    list-style-type: none;
+}
+
+.hot .single-debate-title{
+    width: 200px;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.single-debate-title img{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: block;
+}
+
+.single-debate-title .title-font{
+    font-family: SimSun;
+    font-weight: bold;
+    width:34px;
+    font-size:34px;
+    color:#ffffff;
+    letter-spacing:0;
+    line-height:48px;
+    text-align:left;
+    margin-left: 25px;
+    margin-top: 20px;
+    position: absolute;
+    text-shadow:-1px 0 4px #000000;
+}
+
+.single-debate-title .title-font-right{
+    margin-left: 115px;
+}
+
+.single-debate-title .title-font-left{
+    margin-top: 60px;
+    margin-left: 50px;
+}
+
+.single-hot-debate .debate-info{
+    width: 350px;
+    position: relative;
+    margin-left: 30px;
+}
+
+.single-hot-debate .debate-condition{
+    width: 55px;
+    height: 110px;
+    overflow: hidden;
+    position: relative;
+    margin-right: 15px;
+}
+
+.single-hot-debate .debate-condition img{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: block;
+}
+
+.single-hot-debate .debate-condition .debate-condition-font{
+    font-family: SimSun;
+    font-size:15px;
+    letter-spacing:0;
+    line-height:20px;
+    text-shadow:0 0 1px rgba(203,203,203,0.50);
+    text-align:left;
+    width: 15px;
+    margin-left: 20px;
+    padding-top: 6px;
+    font-weight: bold;
+    color:rgba(10,69,125,0.68);
+}
+
+.single-hot-debate .debate-time{
+    font-family: SimSun;
+    font-size: 16px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.debater-info-box{
+    background:#ffffff;
+    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
+    width: 360px;
+    height: 180px;
+    margin-top: 15px;
+    margin-bottom: 30px;
+}
+
+.debate-info .debater-info-box .side-font{
+    font-family: SimSun;
+    font-size:28px;
+    letter-spacing:0;
+    line-height:64px;
+    text-shadow:0 0 1px rgba(203,203,203,0.50);
+    text-align:left;
+    width: 28px;
+    margin-left: 15px;
+    padding-top: 22px;
+    font-weight: bold;
+}
+
+.debate-info .debater-info-box .verticle-line{
+    border:0 solid;
+    background-color:rgba(15,108,197,0.16);
+    width:1.2px;
+    height:150px;
+    margin-top: 15px;
+    margin-left: 15px;
+    display: inline-block;
+}
+
+.debate-info .debater-info-box .debater-info-line{
+
+}
+
+.debate-info .debater-info-box .debater-box{
+    width: 280px;
+    margin-top: 5px;
+}
+
+.debate-info .debater-info-box .debater{
+    margin-bottom: 5px;
+}
+
+.debater-avatar{
+    margin-top: 9px;
+    border:2px solid #509ae1;
+    width:40.4px;
+    height:40.4px;
+    border-radius:100%;
+    overflow: hidden;
+}
+
+.debater-box-orange .debater-avatar{
+    margin-top: 9px;
+    border:2px solid #f67a23;
+    width:40.4px;
+    height:40.4px;
+    border-radius:100%;
+    overflow: hidden;
+}
+
+.debater-avatar-blank{
+    border:2px solid white;
+    width:36.4px;
+    height:36.4px;
+    border-radius:100%;
+    overflow: hidden;
+}
+
+.debater-avatar img{
+    width: 100%;
+    height:100%;
+}
+
+.dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    margin-bottom: 2.5px;
+    margin-top: 26px;
+    margin-left: 10px;
+}
+
+.debater-intro{
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 7px;
+}
+
+.debater-name{
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.debater-introduce{
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.enter-button{
+    background:#3788d4;
+    border-radius:5px;
+    width:71px;
+    height:33px;
+    margin-right: 10px;
+    margin-top: 300px;
+    color: white;
+    font-family: SimSun;
+    border: none;
+    letter-spacing: 7px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.list{
+    display: inline-block;
+    background:#ffffff;
+    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
+    width: 278px;
+    height: 250px;
+    list-style-type: none;
+    margin-left: 30px;
+    margin-top: 20px;
+}
+
+.list .list-content{
+    width: 238px;
+    margin:0 auto;
+}
+
+.list h3{
+    font-size: 26px;
+    font-weight: 200;
+    letter-spacing: 5px;
+}
+
+.list-debate{
+    padding:0px;
+}
+
+.list .list-debate-title{
+    margin-top: 15px;
+    margin-bottom: 20px;
+    color:rgba(10,69,125,0.88);
+    height: 40px;;
+    line-height: 22px;
+}
+
+.recommend-debate{
+    padding: 0px;
+}
+
+.recommend .recommend-debate-title{
+    margin-top: 20px;
+    margin-bottom: 25px;
+    color:rgba(10,69,125,0.88);
+    line-height: 22px;
+}
+
+.twelve-margin-font{/*如果是单行，加上这个属性*/
+    font-size: 13px;
+    line-height: 20px;
+    margin-top: 12px;
+}
+
+.list .first-font{
+    font-size:47px;
+    font-weight: 200;
+    width:20px;  
+    line-height: 42px;
+}
+
+.list .second-font{
+    font-size:38px;
+    font-weight: 200;
+    width:20px;  
+    line-height: 42px;
+    margin-left: 3px;
+}
+
+.list .third-font{
+    font-size:38px;
+    font-weight: 200;
+    width:20px;  
+    line-height: 42px;
+    margin-left: 3px;
+}
+
+.eighty-seven-percent{
+    width: 87%;
+}
+
+.recommend{
+    display: inline-block;
+    background:#ffffff;
+    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
+    width: 278px;
+    height: 263px;
+    list-style-type: none;
+    margin-top: 20px;
+    margin-right: 22px;
+}
+
+.recommend-content{
+    width: 238px;
+    margin:0 auto;
+}
+
+.recommend h3{
+    font-size: 26px;
+    font-weight: 200;
+    letter-spacing: 5px;
+}
+
+.new-debate{
+    display: inline-block;
+    width: 278px;
+    height: 263px;
+    list-style-type: none;
+    margin-top: 20px;
+    margin-right: 22px;
+}
+
+.new-debate-title{
+    width: 100px;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.new-debate-title img{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: block;
+}
+
+.new-title-font{
+    font-family: SimSun;
+    font-weight: bold;
+    width:18px;
+    font-size:18px;
+    color:#ffffff;
+    letter-spacing:0;
+    line-height:28px;
+    text-align:left;
+    margin-left: 5px;
+    margin-top: 5px;
+    position: absolute;
+    text-shadow:-1px 0 4px #000000;
+}
+
+.new-debate .new-debate-choice{
+    background:#ffffff;
+    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
+    width: 100%;
+    height: 84%;
+    list-style-type: none;
+    margin-top: 38px;
+    z-index: -1;
+}
+
+.new-title-font-right{
+    margin-left: 60px;
+    margin-top: 10px;
+}
+
+.new-title-font-left{
+    margin-left: 25px;
+    margin-top: 50px;
+}
+
+.new-debate-choice .blue-choice{
+    display: inline;
+    position: relative;
+}
+
+.new-debate-choice .orange-choice{
+    display: inline;
+    position: relative;
+}
+
+.new-debate .new-debate-choice #blue-choice-button{
+    width: 60px;
+    height: 150px;
+    margin-left: 10px;
+    position: absolute;
+}
+
+.new-debate .new-debate-choice #orange-choice-button{
+    width: 60px;
+    height: 150px;
+    margin-left: 90px;
+    position: absolute;
+}
+
+.new-debate .new-debate-choice .blue-choice span{
+    position: absolute;
+    font-family: SimSun;
+    font-weight: bold;
+    width:24px;
+    font-size:24px;
+    color:#ffffff;
+    letter-spacing:0;
+    line-height:50px;
+    margin-left: 28px;
+    margin-top: 10px;
+}
+
+.new-debate .new-debate-choice .orange-choice span{
+    position: absolute;
+    font-family: SimSun;
+    font-weight: bold;
+    width:24px;
+    font-size:24px;
+    color:#ffffff;
+    letter-spacing:0;
+    line-height:50px;
+    margin-left: 108px;
+    margin-top: 10px;
+}
+
+.new-debate-choice .choice-description{
+    font-size: 12px;
+    display: block;
+    padding-top: 170px; 
+}
+
+.blue{
+    color:#509ae1;
+}
+
+.orange{
+    color:#f67a23;
+}
+
+.bkblue{
+    background: #509ae1;
+}
+
+.bkorange{
+    background:#f67a23;
+}
+
+.line{
+    border:none;
+    background-color: rgba(15,108,197,0.16);
+    height:0.8px;
+    margin-top: 14px;
+}
+

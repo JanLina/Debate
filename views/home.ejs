@@ -1,21 +1,165 @@
 <%include base/head.ejs %>
+<link rel="stylesheet" href="/stylesheets/home.css">
   </head>  
   <body>
     <% include base/header.ejs %>
-    <div class="content">
-        <!-- <div class="hot">
-            <h2>本周热点</h2>
-            <ul></ul>
+    <div class="main">
+        <div class="content">
+            <div class="hot fl">
+                <h2>本周热点</h2>
+                    <ul>
+                        <li class="single-hot-debate">
+                            <div class="single-debate-title fl">
+                                <img src="images/single-debate-background.png" alt="">
+                                <div class="title-font title-font-right">一段情感中必</div>
+                                <div class="title-font title-font-left">定存在占有欲吗 ？</div>
+                            </div>
+                            <div class="debate-condition fr">
+                                <img src="images/debate-info-tie.png" alt="">
+                                <div class="debate-condition-font">即将开场</div>
+                            </div>
+
+                            <div class="debate-info fl">
+                                <div class="debate-time">今晚 19:00</div>
+                                <div class="debater-info-box">
+                                    <div class="side-font blue fl">正方</div>
+                                    <div class="verticle-line debater-info-line "></div>
+                                    <div class="debater-box fr">
+                                        <div id="blue-first" class="debater">
+                                            <div class="debater-avatar fl">
+                                                <div class="debater-avatar-blank">
+                                                <img src="images/icon_avatar.jpg" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="dot bkblue fl"></div>
+                                            <div class="debater-intro">
+                                                <div class="debater-name">成长的樱桃树</div>
+                                                <div class="debater-introduce">占有欲是人类保护情感投入的本能</div>
+                                            </div>
+                                        </div>
+                                        <div id="blue-second" class="debater">
+                                            <div class="debater-avatar fl">
+                                                <div class="debater-avatar-blank">
+                                                <img src="images/icon_avatar.jpg" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="dot bkblue fl"></div>
+                                            <div class="debater-intro">
+                                                <div class="debater-name">成长的樱桃树</div>
+                                                <div class="debater-introduce">占有欲是人类保护情感投入的本能</div>
+                                            </div>
+                                        </div>
+                                        <div id="blue-third" class="debater">
+                                            <div class="debater-avatar fl">
+                                                <div class="debater-avatar-blank">
+                                                <img src="images/icon_avatar.jpg" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="dot bkblue fl"></div>
+                                            <div class="debater-intro">
+                                                <div class="debater-name">成长的樱桃树</div>
+                                                <div class="debater-introduce">占有欲是人类保护情感投入的本能</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="debater-info-box">
+                                    <div class="side-font orange fl">反方</div>
+                                    <div class="verticle-line debater-info-line "></div>
+                                    <div class="debater-box debater-box-orange fr">
+                                        <div id="orange-first" class="debater">
+                                            <div class="debater-avatar fl">
+                                                <div class="debater-avatar-blank">
+                                                <img src="images/icon_avatar.jpg" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="dot bkorange fl"></div>
+                                            <div class="debater-intro">
+                                                <div class="debater-name">成长的樱桃树</div>
+                                                <div class="debater-introduce">占有欲是人类保护情感投入的本能</div>
+                                            </div>
+                                        </div>
+                                        <div id="orange-second" class="debater">
+                                            <div class="debater-avatar fl">
+                                                <div class="debater-avatar-blank">
+                                                <img src="images/icon_avatar.jpg" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="dot bkorange fl"></div>
+                                            <div class="debater-intro">
+                                                <div class="debater-name">成长的樱桃树</div>
+                                                <div class="debater-introduce">占有欲是人类保护情感投入的本能</div>
+                                            </div>
+                                        </div>
+                                        <div id="orange-third" class="debater">
+                                            <div class="debater-avatar fl">
+                                                <div class="debater-avatar-blank">
+                                                <img src="images/icon_avatar.jpg" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="dot bkorange fl"></div>
+                                            <div class="debater-intro">
+                                                <div class="debater-name">成长的樱桃树</div>
+                                                <div class="debater-introduce">占有欲是人类保护情感投入的本能</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="button" value="入场" class="enter-button fr">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="list">
+                <div class="list-content">
+                    <h3>榜单</h3>
+                    <div class="line"></div>
+                    <ul class="list-debate">
+                        <li class="list-debate-title">
+                            <div class="first-font fl">1</div>
+                            <div class="eighty-seven-percent fr">便捷性是老年人手机的首要关注因素吗？</div>
+                        </li>
+                        <li class="list-debate-title ">
+                            <div class="second-font fl">2</div>
+                            <div class="eighty-seven-percent twelve-margin-font fr">隐喻建立在人类空间认知上吗？</div>
+                        </li>
+                        <li class="list-debate-title">
+                            <div class="third-font fl">3</div>
+                            <div class="eighty-seven-percent twelve-margin-font fr">一段感情之中必定存在占有欲吗？</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="recommend fr">
+                <div class="recommend-content">
+                    <h3>推荐</h3>
+                    <div class="line"></div>
+                    <ul class="recommend-debate">
+                        <li class="recommend-debate-title">便捷性是老年人手机的首要关注因素吗？</li>
+                        <li class="recommend-debate-title ">隐喻建立在人类空间认知上吗?</li>
+                        <li class="recommend-debate-title">一段感情之中必定存在占有欲吗？</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="new-debate fr">
+            <div class="new-debate-title fl">
+                <img src="images/choice-background.png" alt="">
+                <div class="new-title-font new-title-font-right">隐喻建立在人类</div>
+                <div class="new-title-font new-title-font-left">空间认知上吗 ？</div>
+            </div> 
+            <div class="new-debate-choice">
+                <div class="blue-choice">
+                    <input type="image" src="images/choice-button.png" id="blue-choice-button">
+                    <span class="fl">正方</span>
+                </div>  
+                <div class="orange-choice">
+                    <input type="image" src="images/choice-button.png" id="orange-choice-button">
+                    <span class="fl">反方</span>
+                </div>
+                <div class="choice-description fr">选择你的站队。系统将根据辩题站队参与度选出下周辩题。</div>
+            </div>
         </div>
-        <div class="list">
-            <h3>榜单</h3>
-            <ul></ul>
-        </div>
-        <div class="recommend">
-            <h3>推荐</h3>
-            <ul></ul>
-        </div>
-        <div class="new-dabate"></div> -->
     </div>
     <%include base/footer.ejs %>
   </body>  
