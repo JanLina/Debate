@@ -70,7 +70,7 @@ io.sockets.on('connection', function(socket) {
         } else if (data.stage === 'free') {  // 自由辩论阶段
             statements[data.order] = data.content;
             counter ++;
-            if (counter === 3) {
+            // if (counter === 3) {
                 statements.forEach(function(statement, index) {
                     if (!statement) {
                         statements[index] = ' ';
@@ -82,7 +82,7 @@ io.sockets.on('connection', function(socket) {
                 setTimeout(() => {
                     io.sockets.in(room).emit('begin');
                 }, 3000);
-            }
+            // }
         } else {  // 结辩
             io.sockets.in(room).emit('newMsg', { code: 1, data: data });
             if (data.stand === 2) {

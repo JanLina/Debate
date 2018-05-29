@@ -20,6 +20,9 @@ router.get('/home', function(req, res, next) {
 router.get('/debate', function(req, res, next) {
   res.render('debate', { title: '辩论赛' });
 });
+router.get('/list', function(req, res, next) {
+  res.render('list', { title: '榜单' });
+});
 
 
 // user

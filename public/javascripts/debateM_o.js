@@ -1,7 +1,7 @@
 $(function() {
     var page = {
         data: {
-            compId: window.location.search.split('=')[1],//分割url，获取辩论赛id
+            compId: window.location.search.split('=')[1],
             compData: null,
             progress: {
                 type: -1,
@@ -10,9 +10,7 @@ $(function() {
                 stand: -1,
                 num: 0
             },
-            /*sessionStorage 以标签页作为一个单位，新建一个会话，存储会话于浏览器端，登陆的时候
-            localStorage 保存期限长，除非手动删掉，关掉浏览器也不影响。
-            */currentUser: { ...JSON.parse(sessionStorage.getItem('user')), ...{ order: -1 } }
+            currentUser: { ...JSON.parse(sessionStorage.getItem('user')), ...{ order: -1 } }
         },
         socket: null,
         timer: null,
@@ -29,7 +27,7 @@ $(function() {
             $liveContentFrees: $('.live-content-free')
         },
         init: function() {
-            var that = this;//回调函数里面的this不是辩论赛，要创建一个永久辩论赛的this
+            var that = this;
             // 获取辩论赛信息
             this.initCompInfo();
             // 设置websocket监听函数
@@ -77,7 +75,7 @@ $(function() {
             this.els.$editContent.append($el);
             $el.focus();
         },
-        initCompInfo: function() {//拿到辩论赛信息，存在data里面
+        initCompInfo: function() {
             var that = this;
             $.post(config.prefixPath + '/competition/getDetail', {compId: that.data.compId}, function(res) {
                 that.data.compData = res.data;
@@ -114,7 +112,7 @@ $(function() {
             var turn = false;
             var progress = this.data.progress;
             var temp = '';
-            if (progress.stage === 'point') {
+            if (progress.stage === 'point' || progress.type === 2) {  // 立论阶段或结辩
                 turn = this.data.currentUser.id === progress.userId._id;
             } else {
                 temp = progress.stand === 1 ? 'proDebaters' : 'conDebaters';
@@ -138,6 +136,7 @@ $(function() {
             var msg = this.els.$editContent.html();
             msg = msg.replace(' contenteditable="true"', '');  // 传递的内容应是不可编辑的
             var progress = this.data.progress;
+            console.log('postMsg', progress.stage, progress.type, 'x0006');
             if (msg.trim().length != 0) {
                 this.socket.emit('postMsg', {
                     compId: this.data.compId,
@@ -153,24 +152,24 @@ $(function() {
             this.els.$editContent.html('');
             this.els.$publishBtn.attr('disabled', false);
         },
-        setSocket: function() {//function里面有function都要记录原来的page
+        setSocket: function() {
             var that = this;
             var progress = that.data.progress;
             that.socket = io.connect();
             that.socket.on('connect', function(socket) {
-                console.log('connect success  x0000');//测试用的
-                that.socket.emit('initRoom', {comp: true});//comp是用于记录用户有没有进入辩论赛房间
+                console.log('connect success  x0000');
+                that.socket.emit('initRoom', {comp: true});
             });
             
             // 比赛开始
-            that.socket.on('begin', function(data) {//每一轮发言开始
+            that.socket.on('begin', function(data) {
                 console.log('begin  x0001');
                 that.countDown();  // 开始第一轮的倒计时
             });
 
             // 直播
             that.socket.on('realTimeMsg', function(res) {
-                if (res.data.order !== -1) {  // 自由辩论，用于判断是哪一个辩手
+                if (res.data.order !== -1) {  // 自由辩论
                     that.els.$liveContentFrees.eq(res.data.order).html(res.data.msg);
                 } else {
                     that.els.$liveContent.html(res.data.msg);
@@ -191,32 +190,29 @@ $(function() {
             });
         },
         handleNewMsg: function(res) {
+            console.log('newMsg', res);
             var that = this;
             var data = res.data;
             if (data.stage === 'free') {
-                data.content = '';
-                res.statements.forEach(function(statement, index) {
-                    var order = index === 0 ? '一辩' : (index === 1 ? '二辩' : '三辩');
-                    data.content += '<p class="order">' + order + '：</p>' + statement;
-                });
+                data.content = '一辩：' + res.statements[0] 
+                             + '二辩：' + res.statements[1]
+                             + '三辩：' + res.statements[2];
             }
-
-            //判断消息气泡显示内容
             var statement = `<div class="${data.stand === 1 ? 'positive' : 'negative'}-debate clearfix">
                                 <div class="debater-info song-font">
                                     <span class="name">${data.stage === 'point' ? data.userId.userName : ''}</span>
                                     <span class="dot"></span>
                                     <span class="role">${data.stand === 1 ? '正方' : '反方'}${ data.stage === 'point' ? (data.num === 1 ? '一辩' : (data.num === 2 ? '二辩' : '三辩')) : ''}</span>
                                     <span class="dot"></span>
-                                    <span class="stage">${data.stage === 'point' ? '立论' : '自由辩论'}</span>
+                                    <span class="stage">${data.type === 2 ? '结辩' : (data.stage === 'point' ? '立论' : '自由辩论')}</span>
                                 </div>
                                 <div class="debate-content">
-                                    <div class="${data.stand === 1 ? 'debater-avatar-blue ' : 'debater-avatar-orange '}${ data.stand === 1 ? 'fl' : 'fr'}">
+                                    <div class="debater-avatar ${data.stand === 1 ? 'fl' : 'fr'}">
                                         <div class="debater-avatar-blank">
-                                            <img src="images/icon_avatar.jpg" alt="">
+                                            <img src="" alt="">
                                         </div>
                                     </div>
-                                    <div class="content-block${data.stand === 1 ? ' content-bk-blue ' : ' content-bk-orange '}${data.stand === 1 ? 'fl' : 'fr'}">
+                                    <div class="content-block ${data.stand === 1 ? 'fl' : 'fr'}">
                                         <div class="content">
                                             ${data.content}
                                         </div>
@@ -225,13 +221,10 @@ $(function() {
                             </div>`;
             that.els.$debateProgress.append($(statement));
             clearTimeout(that.timer);  // 关闭倒计时
-            that.els.$editCountDown.html('倒计时：--');  // 将两个倒计时置空
-            that.els.$liveCountDown.html('倒计时：--');
-            
             // 更新progress
             // progress: { type: -1, stage: '', userId: '', stand: -1, num: 0 }
             var progress = that.data.progress;
-            var progressNew = JSON.parse(JSON.stringify(that.data.progress));//生拷贝
+            var progressNew = JSON.parse(JSON.stringify(that.data.progress));
             if (progress.stage === 'point') {  // 立论阶段
                 progressNew.userId = progress.stand === 1 ? that.data.compData.conDebaters[progress.num - 1] : that.data.compData.proDebaters[progress.num];
                 progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
@@ -265,17 +258,28 @@ $(function() {
                         }
                     });
                 }
-            } else {  // 自由辩论
+            } else if (progress.stage === 'free') {  // 自由辩论
                 console.log(progress.stand, progress.num, 'x0003');
-                // if (progress.stand === 2 && progress.num === 3) {  // 自由辩论结束，取比赛结果
+                progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
+                progressNew.stand = progress.stand === 1 ? 2 : 1;
+                // if (progress.stand === 2 && progress.num === 3) {  // 自由辩论结束，进入结辩
                 if (progress.stand === 2 && progress.num === 1) {
+                    progressNew.stage = '';
+                    progressNew.type = 2;
+                    progressNew.num = 1;
+                    progressNew.stand = 1;
+                    progressNew.userId = that.data.compData.proDebaters[2];  // 由三辩进行结辩
+                }
+            } else {  // 结辩
+                if (progress.stand === 2) {  // 结辩结束，获取比赛结果
+                    that.els.$publishBtn.attr('disabled', true);
                     $.post(config.prefixPath + '/debate/getResult', {compId: that.data.compId}, function(res) {
                         console.log('result', res, 'x0005');
                     });
                     return;
                 }
-                progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
-                progressNew.stand = progress.stand === 1 ? 2 : 1;
+                progressNew.userId = that.data.compData.conDebaters[2];
+                progressNew.stand = 2;
             }
             that.data.progress = progressNew;
         },

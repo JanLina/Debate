@@ -17,7 +17,7 @@ $(function() {
             });
         },
         confirmLogin: function() {
-            this.handleConfirm(this, $('.login-wrapper').eq(0), this.els.$loginContent, config.prefixPath + '/user/login', config.prefixPath + '/manage');
+            this.handleConfirm(this, $('.login-wrapper').eq(0), this.els.$loginContent, config.prefixPath + '/user/login', config.prefixPath + '/home');
         },
         confirmRegister: function() {
             this.handleConfirm(this, $('.register-wrapper').eq(0), this.els.$registerContent, config.prefixPath + '/user/register', config.prefixPath + '/login');
