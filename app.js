@@ -79,9 +79,15 @@ io.sockets.on('connection', function(socket) {
                 io.sockets.in(room).emit('newMsg', { code: 1, data: data, statements: statements });
                 counter = 0;
                 statements = [];
+                // if (data.num === 3 && data.stand === 2) {
+                if (data.num === 1 && data.stand === 2) {
+                    delay = 5000;
+                } else {
+                    delay = 3000;
+                }
                 setTimeout(() => {
                     io.sockets.in(room).emit('begin');
-                }, 3000);
+                }, delay);
             // }
         } else {  // 结辩
             io.sockets.in(room).emit('newMsg', { code: 1, data: data });

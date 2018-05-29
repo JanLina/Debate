@@ -168,7 +168,7 @@ exports.changeSide = function(req, res, next) {
 // };
 
 // 获取比赛结果
-exports.getResult = function(req, res, next) {
+exports.getResultT = function(req, res, next) {
     var ep = new EventProxy();
     var compId = req.body.compId;
     var compResult = {};
@@ -199,27 +199,27 @@ exports.getResult = function(req, res, next) {
                     // 计算获胜方，1表示正方，2表示反方
                     compResult.winner = result.proVote === result.conVote ? 0 : (result.proVote > result.conVote ? 1 : 2);
                     // 计算并获取MVP
-                    // var mvpUserId = 0;
-                    // var mvpCalc = 0;
-                    // var temp = 0;
-                    // result.changeSide.forEach(function(value, index) {
-                    //     temp = value.attract - value.leave;
-                    //     mvpUserId = mvpCalc < temp ? value.userId : mvpUserId;
-                    //     mvpCalc = mvpCalc < temp ? temp : mvpCalc;
-                    // });
-                    // compResult.mvpCalc = mvpCalc;
-                    // User.findOne({_id: mvpUserId}, {userName: 1, icon: 1}, function(err, result) {
-                    //     if (err) {
-                    //         res.send({code: 0, data: err});
-                    //     } else {
-                    //         var mvpUser = {
-                    //             id: mvpUserId,
-                    //             userName: result.userName,
-                    //             icon: result.icon
-                    //         }
-                    //         ep.emit('mvpUser', mvpUser);
-                    //     }
-                    // });
+                    var mvpUserId = 0;
+                    var mvpCalc = 0;
+                    var temp = 0;
+                    result.changeSide.forEach(function(value, index) {
+                        temp = value.attract - value.leave;
+                        mvpUserId = mvpCalc < temp ? value.userId : mvpUserId;
+                        mvpCalc = mvpCalc < temp ? temp : mvpCalc;
+                    });
+                    compResult.mvpCalc = mvpCalc;
+                    User.findOne({_id: mvpUserId}, {userName: 1, icon: 1}, function(err, result) {
+                        if (err) {
+                            res.send({code: 0, data: err});
+                        } else {
+                            var mvpUser = {
+                                id: mvpUserId,
+                                userName: result.userName,
+                                icon: result.icon
+                            }
+                            ep.emit('mvpUser', mvpUser);
+                        }
+                    });
                     // 计算并获取最佳言论
                     var bestStatementId = 0;
                     var attract = 0;
@@ -239,17 +239,39 @@ exports.getResult = function(req, res, next) {
                         }
                     });
 
-                    // compResult.bestStatementId = result.freeDebateStatements[2].statementId;  // 最佳言论暂时random
-                    // Statement.findOne({_id: compResult.bestStatementId}, {userId: 1, content: 1}, function(err, result) {
-                    //     if (err) {
-                    //         res.send({code: 0, data: err});
-                    //     } else {
-                    //         var bestStatement = {userId: result.userId, content: result.content};
-                    //         ep.emit('bestStatement', bestStatement);
-                    //     }
-                    // });
+                    compResult.bestStatementId = result.freeDebateStatements[2].statementId;  // 最佳言论暂时random
+                    Statement.findOne({_id: compResult.bestStatementId}, {userId: 1, content: 1}, function(err, result) {
+                        if (err) {
+                            res.send({code: 0, data: err});
+                        } else {
+                            var bestStatement = {userId: result.userId, content: result.content};
+                            ep.emit('bestStatement', bestStatement);
+                        }
+                    });
                 }
             });
         }
     });
+};
+
+// 获取比赛结果 —— Test
+exports.getResult = function(req, res, next) {
+    var r = {
+        winner: 1, // 正方
+        mvpUser: {
+            stand: 2,
+            order: 1,
+            userName: '不会挖洞的土拨鼠',
+            icon: 'http://www.fzlqqqm.com/uploads/allimg/20150306/201503062251092154.jpg'
+        },
+        bestStatement: {
+            stand: 1,
+            order: 0,
+            stage: 'free',
+            num: 2,
+            userName: '成长中的樱桃树',
+            icon: 'http://imgsrc.baidu.com/imgad/pic/item/bba1cd11728b4710ff77bfeac9cec3fdfc0323bf.jpg'
+        }
+    };
+    res.send({code: 1, data: r});
 };

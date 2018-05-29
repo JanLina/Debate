@@ -448,7 +448,7 @@
 .debate-box .end-debate .debate-result .result-mvp-line{
     width: 320px;
     background-color: white;
-    margin-top: 80px;
+    /* margin-top: 80px; */
     margin-right: 25px;
 }
 
@@ -512,11 +512,48 @@
 .debate-progress .debate-content .content-block {
     width: 80%;
 }
+*/
+
+/* M */
 .debate-progress .debate-content .content-block .content {
-    width: 90%;
     text-align: left;
-} */
-/* 自由辩论气泡中，辩手序号 */
+}
 .order {
     text-align: left;
+}
+.last-debate {
+    margin-top: 20px;
+}
+/* 比赛结果 */
+.end-debate {
+    margin-top: 20px;
+}
+.debate-result {
+    text-align: left;
+}
+.debate-result .result-wrapper {
+    width: 80%;
+    height: 100%;
+    padding-top: 9px;
+    color: #fff;
+}
+.debate-result .result-wrapper .mvp,
+.debate-result .result-wrapper .statement {
+    height: 46%;
+    padding-left: 12px;
+}
+.debate-result .result-wrapper .mvp {
+    margin-bottom: -13px;
+}
+.debate-result .result-wrapper .statement {
+    margin-top: 13px;
+}
+.debate-result .result-wrapper h4 {
+    font-size: 16px;
+}
+.debate-result .result-wrapper img {
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    margin-right: 9px;
 }
