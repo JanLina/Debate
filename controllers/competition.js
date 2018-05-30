@@ -148,7 +148,7 @@ exports.getDetail = function (req, res, next) {
                 comp.conDebaters = conDebaters;
                 comp.proDebaters = proDebaters;
                 // res.render('debate', { title: '辩论赛', compId: compId, data: comp });
-                res.send({code: 1, compId: compId, nativeComp: result, data: comp});
+                res.send({code: 1, compId: compId, nativeComp: result, data: comp, proDebaters: proDebaters, conDebaters: conDebaters});
             });
             // 若比赛已结束，获取比赛记录
             if (comp.status === 2) {

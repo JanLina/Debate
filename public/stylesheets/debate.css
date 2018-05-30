@@ -206,14 +206,16 @@
     margin-top:16px;
 }
 
-.debater-view{
+.debater-view,
+.audience-view {
     margin-top: 23px;
     height: 600px;
     width:376px;
     float: right;
 }
 
-.live-box{
+.live-box,
+.vote-box {
     background:#ffffff;
     box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
     width: 377px;
@@ -260,7 +262,8 @@
     font-weight: bolder;
 }
 
-.edit-box{
+.edit-box,
+.player-box {
     margin-top:25px;
     background:#ffffff;
     box-shadow:0 0 3px 0 rgba(0,0,0,0.19);

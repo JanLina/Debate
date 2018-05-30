@@ -10,7 +10,8 @@ $(function() {
                 stand: -1,
                 num: 0
             },
-            currentUser: { ...JSON.parse(sessionStorage.getItem('user')), ...{ order: -1 } }
+            currentUser: { ...JSON.parse(sessionStorage.getItem('user')), ...{ order: -1 } },
+            isDebater: false
         },
         socket: null,
         timer: null,
@@ -24,14 +25,15 @@ $(function() {
             $editCountDown: $('#edit-count-down'),
             $liveCountDown: $('#live-count-down'),
             $debaterSwitch: $('.debater-switch').eq(0),
-            $liveContentFrees: $('.live-content-free')
+            $liveContentFrees: $('.live-content-free'),
+            $vote: $('.vote')
         },
         init: function() {
             var that = this;
             // 获取辩论赛信息
             this.initCompInfo();
             // 设置websocket监听函数
-            this.setSocket();
+            // this.setSocket();
             // 开始比赛
             this.els.$startBtn.click(function() {
                 that.socket.emit('begin');
@@ -47,6 +49,27 @@ $(function() {
             // 切换发言类型
             this.els.$typeBtn.click(function(ev) {
                 that.switchType(ev);
+            });
+            // 观众投票
+            this.els.$vote.click(function(ev) {
+                that.vote(ev);
+            });
+        },
+        initView: function() {
+            var isDebater = this.data.isDebater;
+        },
+        vote: function(ev) {
+            var $target = $(ev.target);
+            var side = $target.text() === '正方' ? 1 : 2;
+            // compId/debater/debaterSide/side
+            var params = {
+                compId: this.data.compId,
+                debater: this.data.progress.userId,
+                debaterSide: this.data.progress.stand,
+                side: side
+            };
+            $.post(config.prefixPath + '/debate/changeSide', params, function(res) {
+                console.log(res, 'x0045');
             });
         },
         switchType: function(ev) {
@@ -82,6 +105,21 @@ $(function() {
                 // 初始化比赛进程
                 that.initProgress();
                 $('.title-font').eq(0).html(res.data.title);
+                 // 判断当前用户是不是辩手
+                res.data.proDebaters.forEach(function(debater) {
+                    if (debater._id === that.data.currentUser.id) {
+                        that.data.isDebater = true;
+                    }
+                });
+                if (!that.data.isDebater) {
+                    res.data.conDebaters.forEach(function(debater) {
+                        if (debater._id === that.data.currentUser.id) {
+                            that.data.isDebater = true;
+                        }
+                    });
+                }
+                that.setSocket();
+                that.initView();
                 // 比赛未开始，初始化比赛
                 if (!res.data.recordId) {
                     $.post(config.prefixPath + '/debate/initComp', {compId: that.data.compId}, function(res) {
@@ -158,7 +196,7 @@ $(function() {
             that.socket = io.connect();
             that.socket.on('connect', function(socket) {
                 console.log('connect success  x0000');
-                that.socket.emit('initRoom', {comp: true});
+                that.socket.emit('initRoom', {comp: true, isDebater: that.data.isDebater});
             });
             
             // 比赛开始

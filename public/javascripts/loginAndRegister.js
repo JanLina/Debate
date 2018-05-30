@@ -27,6 +27,8 @@ $(function() {
             $alert.hide();
             var userName = $content.find('.userName').eq(0).val();
             var password = $content.find('.password').eq(0).val();
+            console.log(userName, 'x0000');
+            console.log(password, 'x0001');
             $.post(postUrl, { userName: userName, password: password }, function(result, status) {
                 console.log(result);
                 if (!result.code && result.data.message) {

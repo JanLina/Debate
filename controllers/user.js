@@ -41,15 +41,16 @@ var getCompInfo = function(compIds, filter) {
 }
 // 创建User
 exports.register = function (req, res, next) {
-    User.find({ phone: req.body.phone}, function(err, result) {
-        if (err) {
-        } else if (result.length) {  // 手机号已注册
-            res.send({ code: 0, data: { message: '该手机号已注册' } });
-        } else {
+    // User.find({ phone: req.body.phone}, function(err, result) {
+    //     if (err) {
+    //     } else if (result.length) {  // 手机号已注册
+    //         res.send({ code: 0, data: { message: '该手机号已注册' } });
+    //     } else {
             var user = new User({
-                phone: req.body.phone,
+                // phone: req.body.phone,
+                phone: 0,
+                userName: req.body.userName,
                 password: req.body.password,
-                userName: '',
                 intro: '',
                 icon: '',
                 role: 0,
@@ -72,8 +73,8 @@ exports.register = function (req, res, next) {
                     res.send({code: 1, data: result});
                 }
             });     
-        }
-    });
+    //     }
+    // });
 };
 // 查找User
 exports.login = function (req, res, next) {
