@@ -11,7 +11,8 @@ $(function() {
                 num: 0
             },
             currentUser: { ...JSON.parse(sessionStorage.getItem('user')), ...{ order: -1 } },
-            isDebater: false
+            isDebater: false,
+            voted: false
         },
         socket: null,
         timer: null,
@@ -57,8 +58,17 @@ $(function() {
         },
         initView: function() {
             var isDebater = this.data.isDebater;
+            if (this.data.isDebater) {
+                $('.debater-view').eq(0).removeClass('hide');
+            } else {
+                $('.audience-view').eq(0).removeClass('hide');
+            }
         },
         vote: function(ev) {
+            if (this.data.voted) {
+                console.log('你已经投过票了');
+                return;
+            }
             var $target = $(ev.target);
             var side = $target.text() === '正方' ? 1 : 2;
             // compId/debater/debaterSide/side
@@ -68,6 +78,7 @@ $(function() {
                 debaterSide: this.data.progress.stand,
                 side: side
             };
+            this.data.voted = true;
             $.post(config.prefixPath + '/debate/changeSide', params, function(res) {
                 console.log(res, 'x0045');
             });
@@ -135,14 +146,12 @@ $(function() {
             var progress = this.data.progress;
             progress.type = 0;
             progress.stage = 'point';
-            // progress.userId = this.data.compData.proDebaters[0];
-            // progress.stand = 1;
-            // progress.num = 1;
-            // [begin] 自由辩论测试
-            progress.userId = this.data.compData.conDebaters[2];
-            progress.stand = 2;
-            progress.num = 3;
-            // [end] 自由辩论测试
+            progress.userId = this.data.compData.proDebaters[0];
+            progress.stand = 1;
+            progress.num = 1;
+            // progress.userId = this.data.compData.conDebaters[2];
+            // progress.stand = 2;
+            // progress.num = 3;
         },
         countDown: function() {
             // 是否当前用户发言时间
@@ -202,7 +211,8 @@ $(function() {
             // 比赛开始
             that.socket.on('begin', function(data) {
                 console.log('begin  x0001');
-                that.countDown();  // 开始第一轮的倒计时
+                that.data.voted = false;
+                that.countDown();  // 开始倒计时
             });
 
             // 直播
@@ -327,8 +337,8 @@ $(function() {
             } else if (progress.stage === 'free') {  // 自由辩论
                 progressNew.num = progress.stand === 2 ? progress.num + 1 : progress.num;
                 progressNew.stand = progress.stand === 1 ? 2 : 1;
-                // if (progress.stand === 2 && progress.num === 3) {  // 自由辩论结束，进入结辩
-                if (progress.stand === 2 && progress.num === 1) {
+                if (progress.stand === 2 && progress.num === 3) {  // 自由辩论结束，进入结辩
+                // if (progress.stand === 2 && progress.num === 1) {  // Testing
                     that.els.$debaterSwitch.addClass('hide');
                     that.els.$liveContent.removeClass('hide');
                     that.els.$liveContentFrees.eq(0).addClass('hide');

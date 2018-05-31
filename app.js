@@ -60,7 +60,6 @@ io.sockets.on('connection', function(socket) {
     // 辩手发表言论  参数：compId, userId, stand, num, order, type, stage, content
     socket.on('postMsg', function(data) {
         debate.publish(data);  // 调用controllers/debate.js的publish方法
-        var room = Object.keys(socket.rooms)[1];
         var delay = 0;
         if (data.stage === 'point') {  // 立论阶段
             io.sockets.in('debater').emit('newMsg', { code: 1, data: data });
@@ -77,7 +76,8 @@ io.sockets.on('connection', function(socket) {
         } else if (data.stage === 'free') {  // 自由辩论阶段
             statements[data.order] = data.content;
             counter ++;
-            // if (counter === 3) {
+            if (counter === 3) {
+            // if (counter === 1) {
                 statements.forEach(function(statement, index) {
                     if (!statement) {
                         statements[index] = ' ';
@@ -87,8 +87,7 @@ io.sockets.on('connection', function(socket) {
                 io.sockets.in('audience').emit('newMsg', { code: 1, data: data, statements: statements });
                 counter = 0;
                 statements = [];
-                // if (data.num === 3 && data.stand === 2) {
-                if (data.num === 1 && data.stand === 2) {
+                if (data.num === 3 && data.stand === 2) {
                     delay = 5000;
                 } else {
                     delay = 3000;
@@ -97,7 +96,7 @@ io.sockets.on('connection', function(socket) {
                     io.sockets.in('debater').emit('begin');
                     io.sockets.in('audience').emit('begin');
                 }, delay);
-            // }
+            }
         } else {  // 结辩
             io.sockets.in('debater').emit('newMsg', { code: 1, data: data });
             io.sockets.in('audience').emit('newMsg', { code: 1, data: data });
