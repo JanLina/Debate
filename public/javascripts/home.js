@@ -4,7 +4,8 @@ $(function() {
             // this.getHot();
             // Testing
             $('.enter-button').eq(0).click(function() {
-                var compId = '5b014c3bf32b5b13845294a5';  // 手动设置比赛id
+                // var compId = '5b014c3bf32b5b13845294a5';  // 手动设置比赛id
+                var compId = '5b113b37b9b45d25507b7bb9';
                 $.post(config.prefixPath + '/competition/getDetail', {compId: compId}, function(result, staus) {
                     window.location.href = 'http://localhost:3000/debate?compId=' + result.compId;
                 });
