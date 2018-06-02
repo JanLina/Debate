@@ -373,13 +373,9 @@
 }
 
 .new-debate .new-debate-choice{
-    background:#ffffff;
-    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
-    width: 100%;
+    width: 80%;
     height: 84%;
-    list-style-type: none;
-    margin-top: 38px;
-    z-index: -1;
+    margin: 0 auto;
 }
 
 .new-title-font-right{

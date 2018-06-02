@@ -123,6 +123,11 @@
     overflow: hidden;
 }
 
+.debate-progress .debate-content .debater-avatar-blank img{
+    width: 100%;
+    height: 100%;
+}
+
 .debate-progress .debate-content .debater-avatar img{
     width: 100%;
     height:100%;
@@ -206,21 +211,45 @@
     margin-top:16px;
 }
 
-.debater-view,
-.audience-view {
+.debater-view{
     margin-top: 23px;
     height: 600px;
     width:376px;
     float: right;
+    position: fixed;
+    left: 750px;
 }
 
-.live-box,
-.vote-box {
+.audience-view {
+    margin-top: 3px;
+    height: 800px;
+    width:400px;
+    float: right;
+    position: fixed;
+    left: 750px;
+}
+
+.audience-view ul{
+    padding-left: 0px;
+    display: inline;
+
+}
+
+.live-box{
     background:#ffffff;
     box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
     width: 377px;
     height:270px;
     position: relative;
+}
+
+.vote-box {
+    background:#ffffff;
+    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
+    width: 430px;
+    height:270px;
+    position: relative;
+    margin-left: 40px;
 }
 
 .live-box .live-box-content{
@@ -559,4 +588,200 @@
     height: 50px;
     border-radius: 25px;
     margin-right: 9px;
+}
+
+.audience-view .vote-box{
+    background:#ffffff;
+    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
+    width:70%;
+    height:35%;
+}
+
+.audience-view .vote-box h3{
+    margin-left: 25px;
+    padding-top: 20px;
+    font-size: 30px;
+    font-weight: 200;
+    letter-spacing: 5px;
+}
+
+.audience-choice{
+    width: 80%;
+    height: 84%;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.audience-choice .blue-choice{
+    display: inline;
+    position: relative;
+}
+
+.audience-choice .orange-choice{
+    display: inline;
+    position: relative;
+}
+
+.audience-choice #blue-choice-button{
+    width: 60px;
+    height: 150px;
+    margin-left: 15px;
+    position: absolute;
+}
+
+.audience-choice #orange-choice-button{
+    width: 60px;
+    height: 150px;
+    margin-left: 120px;
+    position: absolute;
+}
+
+.audience-choice .blue-choice span{
+    position: absolute;
+    font-family: SimSun;
+    font-weight: bold;
+    width:24px;
+    font-size:24px;
+    color:#ffffff;
+    letter-spacing:0;
+    line-height:50px;
+    margin-left: 33px;
+    margin-top: 10px;
+}
+
+.audience-choice .orange-choice span{
+    position: absolute;
+    font-family: SimSun;
+    font-weight: bold;
+    width:24px;
+    font-size:24px;
+    color:#ffffff;
+    letter-spacing:0;
+    line-height:50px;
+    margin-left: 138px;
+    margin-top: 10px;
+}
+
+.choice-line{
+    width: 86%;
+    margin: 0 auto;
+}
+
+.audience-view .player-box{
+    margin-top: 0px;
+    background:#ffffff;
+    box-shadow:0 0 3px 0 rgba(0,0,0,0.19);
+    width:100%;
+    height:500px;
+}
+
+.audience-view .player-box ul{
+    display: inline-block;
+    margin-top: 12px;
+    margin-left: 8px;
+}
+
+.audience-view .player-box li{
+    height: 50px;
+    /* width: 80%; */
+}
+
+.audience-view .player-box .blue-debater{
+    background:rgba(12,130,244,0.04);
+    border-radius:4px;
+    width:86%;
+    height:35%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.audience-view .player-box .orange-debater{
+    background:rgba(250,226,212,0.41);
+    border-radius:4px;
+    width:86%;
+    height:35%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.audience-view .player-box h4{
+    font-family: SimSun;
+    font-size:20px;
+    letter-spacing:0;
+    line-height:46px;
+    text-shadow:0 0 1px rgba(203,203,203,0.50);
+    text-align:left;
+    width: 20px;
+    /* margin-left: 20px; */
+    margin-left: 12px;
+    padding-top: 20px;
+    font-weight: bold;
+}
+
+.debater-avatar{
+    margin-top: 9px;
+    border:2px solid #509ae1;
+    width:40.4px;
+    height:40.4px;
+    border-radius:100%;
+    overflow: hidden;
+}
+
+.debater-box-orange .debater-avatar{
+    margin-top: 9px;
+    border:2px solid #f67a23;
+    width:40.4px;
+    height:40.4px;
+    border-radius:100%;
+    overflow: hidden;
+}
+
+.debater-avatar-blank{
+    border:2px solid white;
+    width:36.4px;
+    height:36.4px;
+    border-radius:100%;
+    overflow: hidden;
+}
+
+.debater-avatar img{
+    width: 100%;
+    height:100%;
+}
+
+.dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    margin-bottom: 2.5px;
+    margin-top: 26px;
+    margin-left: 10px;
+}
+
+.debater-intro{
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 7px;
+}
+
+.debater-name{
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 11px;
+}
+
+.blue{
+    color:#509ae1;
+}
+
+.orange{
+    color:#f67a23;
+}
+
+.bkblue{
+    background: #509ae1;
+}
+
+.bkorange{
+    background:#f67a23;
 }

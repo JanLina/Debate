@@ -16,6 +16,8 @@ $(function() {
         },
         socket: null,
         timer: null,
+        avatars: ['images/avatar1.png', 'images/avatar2.png', 'images/avatar3.png', 'images/avatar4.png', 'images/avatar5.png', 'images/avatar6.png'],
+        avatarCounter: 0,
         els: {
             $typeBtn: $('.type-button').eq(0),
             $startBtn: $('#start'),
@@ -268,6 +270,19 @@ $(function() {
             //                     </div>
             //                 </div>`;
             //判断消息气泡显示内容
+            var avatar = '';
+            if (data.stage === 'point') {
+                avatar = that.avatars[that.avatarCounter];
+                that.avatarCounter ++;
+            } else if (data.stage === 'free') {
+                avatar = 'images/icon_avatar.jpg';
+            } else {
+                if (data.stand === 1) {
+                    avatar = that.avatars[4];
+                } else {
+                    avatar = that.avatars[5];
+                }
+            }
             var statement = `<div class="${data.stand === 1 ? 'positive' : 'negative'}-debate clearfix">
                                 <div class="debater-info song-font">
                                     <span class="name">${data.stage === 'point' ? data.userId.userName : ''}</span>
@@ -279,7 +294,7 @@ $(function() {
                                 <div class="debate-content">
                                     <div class="${data.stand === 1 ? 'debater-avatar-blue ' : 'debater-avatar-orange '}${ data.stand === 1 ? 'fl' : 'fr'}">
                                         <div class="debater-avatar-blank">
-                                            <img src="images/icon_avatar.jpg" alt="">
+                                            <img src="${avatar}" alt="">
                                         </div>
                                     </div>
                                     <div class="content-block${data.stand === 1 ? ' content-bk-blue ' : ' content-bk-orange '}${data.stand === 1 ? 'fl' : 'fr'}">
@@ -361,7 +376,23 @@ $(function() {
                     that.els.$publishBtn.attr('disabled', true);
                     setTimeout(() => {
                         $.post(config.prefixPath + '/debate/getResult', {compId: that.data.compId}, function(res) {
-                            var data = res.data;
+                            // var data = res.data;
+                            var data = {
+                                winner: 1, // 正方
+                                mvpUser: {  // 反方二辩
+                                    stand: 2,
+                                    order: 1,
+                                    userName: '栗子酱',
+                                    icon: that.avatars[3]
+                                },
+                                bestStatement: {  // 正方一辩
+                                    stand: 1,
+                                    order: 0,
+                                    stage: 'point',
+                                    userName: '成长的樱桃树',
+                                    icon: that.avatars[0]
+                                }  
+                            };
                             var resultHtml = `<div class="end-debate">
                                                 <div class="line end-sign-line fl"></div>
                                                 <span class="sign-font">辩论结束</span>
@@ -385,7 +416,7 @@ $(function() {
                                                             ·
                                                             <span>${data.bestStatement.stand === 1 ? '正' : '反'}方${data.bestStatement.order === 0 ? '一' : (data.mvpUser.order === 1 ? '二' : '三')}辩</span>
                                                             ·
-                                                            <span>${data.bestStatement.stage === 'free' ? '自由辩论' : '立论'}（${data.bestStatement.num === 1 ? '一' : (data.bestStatement.num === 2 ? '二' : '三')}）</span>
+                                                            <span>${data.bestStatement.stage === 'free' ? '自由辩论' : '立论'}</span>
                                                         </div>
                                                     </div>
                                                 </div>
