@@ -70,15 +70,21 @@ exports.getList = function (req, res, next) {
     var pageSize = +req.body.pageSize;
     var findCondition = null;
     var start;
-    if (timeRange === 0) {  // 上周
-        var lastMonday = calcDate(-7);
-        start = getZero(lastMonday);
-    } else if (timeRange === 1) {  // 近3月
-        start = new Date();  
-        start.setMonth(start.getMonth()-3);
-    } else if (timeRange === 2) {  // 本年
-        var today = new Date();
-        start = new Date(today.getFullYear(), 0, 1, 0, 0, 0); 
+    switch (timeRange) {
+        case 0:  // 上周
+            var lastMonday = calcDate(-7);
+            start = getZero(lastMonday);
+            break;
+        case 1:  // 近3月
+            start = new Date();
+            start.setMonth(start.getMonth()-3);
+            break;
+        case 2:  // 本年
+            var today = new Date();
+            start = new Date(today.getFullYear(), 0, 1, 0, 0, 0);
+            break;
+        default:
+            break;
     }
     if (timeRange === 3) {  // 不限
         findCondition = {};
@@ -86,6 +92,7 @@ exports.getList = function (req, res, next) {
         findCondition = {createdAt: {$gt: start}};
     }
     Competition.find(findCondition).sort({'clicks': -1}).skip((currentPage - 1) * pageSize).limit(pageSize).exec(function(err, result) {
+        // ...
         if (err) {
             res.send({code: 0, data: err});
         } else {
@@ -93,6 +100,18 @@ exports.getList = function (req, res, next) {
         }
     });
 };
+
+// if (timeRange === 0) {  // 上周
+    //     var lastMonday = calcDate(-7);
+    //     start = getZero(lastMonday);
+    // } else if (timeRange === 1) {  // 近3月
+    //     start = new Date();  
+    //     start.setMonth(start.getMonth()-3);
+    // } else if (timeRange === 2) {  // 本年
+    //     var today = new Date();
+    //     start = new Date(today.getFullYear(), 0, 1, 0, 0, 0); 
+    // }
+
 // 获取推荐
 exports.getRecommend = function (req, res, next) {
     var total = 0;

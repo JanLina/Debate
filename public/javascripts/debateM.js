@@ -12,17 +12,20 @@ $(function() {
             },
             currentUser: { ...JSON.parse(sessionStorage.getItem('user')), ...{ order: -1 } },
             isDebater: false,
-            voted: false
+            voted: false,
+            refute: true
         },
         socket: null,
         timer: null,
         avatars: ['images/avatar1.png', 'images/avatar2.png', 'images/avatar3.png', 'images/avatar4.png', 'images/avatar5.png', 'images/avatar6.png'],
+        currentAvatar: 0,
         avatarCounter: 0,
         els: {
             $typeBtn: $('.type-button').eq(0),
             $startBtn: $('#start'),
             $editContent: $('.edit-content').eq(0),
             $liveContent: $('.live-content').eq(0),
+            $singleOpponentInfo: $('.single-opponent-info'),
             $publishBtn: $('.edit-publish-button').eq(0),
             $debateProgress: $('.debate-progress').eq(0),
             $editCountDown: $('#edit-count-down'),
@@ -113,21 +116,28 @@ $(function() {
         },
         initCompInfo: function() {
             var that = this;
+            //向服务器发送一个请求，get辩论赛的detail，根据辩论赛的id，获取信息，存放到res（response）里
             $.post(config.prefixPath + '/competition/getDetail', {compId: that.data.compId}, function(res) {
-                that.data.compData = res.data;
+                that.data.compData = res.data;//获取到的信息作为辩论赛的信息
                 // 初始化比赛进程
                 that.initProgress();
                 $('.title-font').eq(0).html(res.data.title);
                  // 判断当前用户是不是辩手
-                res.data.proDebaters.forEach(function(debater) {
-                    if (debater._id === that.data.currentUser.id) {
+                res.data.proDebaters.forEach(function(debater,index) {//forEach函数调用每个数组中的元素，并且输出到回调函数中
+                    if (debater._id === that.data.currentUser.id) {//res.data.proDebaters存放辩手id，每一个辩手id与that.data.currentUser的id比较，看是否为同一人
                         that.data.isDebater = true;
+                        currentAvatar = 2*index;
+                        //console.log(index);
+                        //console.log(avatarSrc);
+                        $("#header-avatar").attr("src",that.avatars[currentAvatar]);
                     }
                 });
                 if (!that.data.isDebater) {
-                    res.data.conDebaters.forEach(function(debater) {
+                    res.data.conDebaters.forEach(function(debater,index) {
                         if (debater._id === that.data.currentUser.id) {
                             that.data.isDebater = true;
+                            currentAvatar = 2*index+1;
+                            $("#header-avatar").attr("src",that.avatars[currentAvatar]);
                         }
                     });
                 }
@@ -137,7 +147,7 @@ $(function() {
                 if (!res.data.recordId) {
                     $.post(config.prefixPath + '/debate/initComp', {compId: that.data.compId}, function(res) {
                         // 获取排序后的一二三辩，比赛记录id
-                        that.data.compData.proDebaters = res.newRecord.proDebaters;
+                        that.data.compData.proDebaters = res.newRecord.proDebaters;//newRecord记录的是什么？
                         that.data.compData.conDebaters = res.newRecord.conDebaters;
                         that.data.compData.recordId = res.newRecord._id;
                     });
@@ -161,16 +171,21 @@ $(function() {
             var turn = false;
             var progress = this.data.progress;
             var temp = '';
+            this.data.refute = true;
             if (progress.stage === 'point' || progress.type === 2) {  // 立论阶段或结辩
                 turn = this.data.currentUser.id === progress.userId._id;
+                that.data.refute = false;
             } else {
+                turn = true;
                 temp = progress.stand === 1 ? 'proDebaters' : 'conDebaters';
                 this.data.compData[temp].forEach(function(user, index) {
                     if (user._id === that.data.currentUser.id) {
-                        turn = true;
+                        // turn = true;
+                        that.data.refute = false;
                     }
                 });
             }
+            $('.edit-box-content .descript').eq(0).html(that.data.refute ? '编辑你的反驳' : '编辑你的发言');
             console.log('当前用户发言', turn, 'x0002');
             this.els.$publishBtn.attr('disabled', !turn);  // 只有当前辩手可以发言
             this.els.$typeBtn.find('input').attr('disabled', !turn);
@@ -188,6 +203,7 @@ $(function() {
             console.log('postMsg', progress.stage, progress.type, 'x0006');
             if (msg.trim().length != 0) {
                 this.socket.emit('postMsg', {
+                    refute: this.data.refute,
                     compId: this.data.compId,
                     userId: progress.userId,
                     stand: progress.stand,
@@ -223,13 +239,27 @@ $(function() {
                     that.els.$liveContentFrees.eq(res.data.order).html(res.data.msg);
                 } else {
                     that.els.$liveContent.html(res.data.msg);
+                    that.els.$singleOpponentInfo.html(res.data.debater);
                 }
             });
-            that.els.$editContent.keyup(function() {
+            that.els.$editContent.keyup(function() {//假如edit有输入内容，传递到服务器
+                if (that.data.refute) return;
                 var msg = that.els.$editContent.html();
                 msg = msg.replace(' contenteditable="true"', '');  // 传递的内容应是不可编辑的
+
+                /**
+                 * 无法切换到下一个人显示
+                 */
+
+                var debater = `<div class="debater-info song-font fl">
+                                    <span class="name">${that.data.progress.userId.userName}</span>
+                                    <span class="dot"></span>
+                                    <span class="role">${that.data.progress.stand === 1 ? '正方' : '反方'}${that.data.progress.num === 1 ? '一辩' : (that.data.progress.num === 2 ? '二辩' : '三辩')}</span>
+                                    <span class="dot"></span>
+                                    <span class="stage">${that.data.progress.type === 2 ? '结辩' : (that.data.progress.stage === 'point' ? '立论' : '自由辩论')}</span>
+                               </div>`;
                 if (msg.trim().length != 0) {
-                    that.socket.emit('realTimeMsg', { userId: progress.userId, order: that.data.currentUser.order, msg });
+                    that.socket.emit('realTimeMsg', { userId: progress.userId, order: that.data.currentUser.order, msg, debater});
                     return;
                 };
             });
@@ -243,32 +273,12 @@ $(function() {
             console.log('newMsg', res);
             var that = this;
             var data = res.data;
+            var refuteStatement = '';
             if (data.stage === 'free') {
                 data.content = '一辩：' + res.statements[0] 
                              + '二辩：' + res.statements[1]
                              + '三辩：' + res.statements[2];
             }
-            // var statement = `<div class="${data.stand === 1 ? 'positive' : 'negative'}-debate clearfix">
-            //                     <div class="debater-info song-font">
-            //                         <span class="name">${data.stage === 'point' ? data.userId.userName : ''}</span>
-            //                         <span class="dot"></span>
-            //                         <span class="role">${data.stand === 1 ? '正方' : '反方'}${ data.stage === 'point' ? (data.num === 1 ? '一辩' : (data.num === 2 ? '二辩' : '三辩')) : ''}</span>
-            //                         <span class="dot"></span>
-            //                         <span class="stage">${data.type === 2 ? '结辩' : (data.stage === 'point' ? '立论' : '自由辩论')}</span>
-            //                     </div>
-            //                     <div class="debate-content">
-            //                         <div class="debater-avatar ${data.stand === 1 ? 'fl' : 'fr'}">
-            //                             <div class="debater-avatar-blank">
-            //                                 <img src="" alt="">
-            //                             </div>
-            //                         </div>
-            //                         <div class="content-block ${data.stand === 1 ? 'fl' : 'fr'}">
-            //                             <div class="content">
-            //                                 ${data.content}
-            //                             </div>
-            //                         </div>
-            //                     </div>
-            //                 </div>`;
             //判断消息气泡显示内容
             var avatar = '';
             if (data.stage === 'point') {
@@ -304,7 +314,39 @@ $(function() {
                                     </div>
                                 </div>
                             </div>`;
+            
+
+            if (res.refuteStatement && res.refuteStatement.length) {
+                var resData = res.refuteStatement;
+                resData.content = '一辩：' + res.refuteStatement[0] 
+                                + '二辩：' + res.refuteStatement[1]
+                                + '三辩：' + res.refuteStatement[2];
+                refuteStatement = `<div class="${data.stand === 2 ? 'positive' : 'negative'}-debate clearfix">
+                                        <div class="debater-info song-font">
+                                            <span class="name">${data.stage === 'point' ? data.userId.userName : ''}</span>
+                                            <span class="dot"></span>
+                                            <span class="role">${data.stand === 2 ? '正方' : '反方'}${ data.stage === 'point' ? (data.num === 1 ? '一辩' : (data.num === 2 ? '二辩' : '三辩')) : ''}</span>
+                                            <span class="dot"></span>
+                                            <span class="stage">反驳</span>
+                                        </div>
+                                        <div class="debate-content">
+                                            <div class="${data.stand === 2 ? 'debater-avatar-blue ' : 'debater-avatar-orange '}${ data.stand === 2 ? 'fl' : 'fr'}">
+                                                <div class="debater-avatar-blank">
+                                                    <img src="${avatar}" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="content-block${data.stand === 2 ? ' content-bk-blue ' : ' content-bk-orange '}${data.stand === 2 ? 'fl' : 'fr'}">
+                                                <div class="content">
+                                                    ${data.content}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+            }
             that.els.$debateProgress.append($(statement));
+            if (refuteStatement) {
+                that.els.$debateProgress.append($(refuteStatement));
+            }
             clearTimeout(that.timer);  // 关闭倒计时
             that.els.$editCountDown.html('倒计时：--');  // 将两个倒计时置空
             that.els.$liveCountDown.html('倒计时：--');

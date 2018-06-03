@@ -1,11 +1,26 @@
 $(function() {
     var page = {
+        // currentUser: { ...JSON.parse(sessionStorage.getItem('user'), ...{ order: -1})},
+        avatarCount: 1,
         init: function() {
             // this.getHot();
             // Testing
+            $("#header-avatar").attr("src","images/avatar1.png");
+            console.log($("#header-avatar").attr("src"));
+
             $('.enter-button').eq(0).click(function() {
                 // var compId = '5b1249fda37baf09fffe7128';  // 手动设置比赛id
                 var compId = '5b014c3bf32b5b13845294a5';
+                
+                /**
+                 * id:5b126be26761b9215c4bf407
+                 * 成长的樱桃树,吹灭酒精灯,苦涩的核桃衣,不会挖洞的土拨鼠,栗子酱,许太太要去海洋馆
+                 * 
+                 * 一段情感之中必定存在占有欲吗？
+                 * 立场简述,立场简述,立场简述,立场简述,立场简述,立场简述
+                 * 
+                 */
+                // var compId = '5b126be26761b9215c4bf407';
                 $.post(config.prefixPath + '/competition/getDetail', {compId: compId}, function(result, staus) {
                     window.location.href = 'http://localhost:3000/debate?compId=' + result.compId;
                 });
@@ -14,7 +29,7 @@ $(function() {
         getHot() {
             // 夭折的本周热点
             $.get(config.prefixPath + '/competition/getHot', function(result) {
-                console.log(result, 'x0000');
+                //console.log(result, 'x0000');
                 var comps = result.data;
                 var compEl = '';
                 var proDebaters = '';
@@ -40,7 +55,7 @@ $(function() {
                                             <div id="blue-first" class="debater">
                                                 <div class="debater-avatar fl">
                                                     <div class="debater-avatar-blank">
-                                                    <img src="images/icon_avatar.jpg" alt="">
+                                                    <img src="avatar1.png" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="dot bkblue fl"></div>
@@ -52,7 +67,7 @@ $(function() {
                                             <div id="blue-second" class="debater">
                                                 <div class="debater-avatar fl">
                                                     <div class="debater-avatar-blank">
-                                                    <img src="images/icon_avatar.jpg" alt="">
+                                                    <img src="avatar2.png" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="dot bkblue fl"></div>
@@ -64,7 +79,7 @@ $(function() {
                                             <div id="blue-third" class="debater">
                                                 <div class="debater-avatar fl">
                                                     <div class="debater-avatar-blank">
-                                                    <img src="images/icon_avatar.jpg" alt="">
+                                                    <img src="avatar3.png" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="dot bkblue fl"></div>
@@ -82,7 +97,7 @@ $(function() {
                                             <div id="orange-first" class="debater">
                                                 <div class="debater-avatar fl">
                                                     <div class="debater-avatar-blank">
-                                                    <img src="images/icon_avatar.jpg" alt="">
+                                                    <img src="avatar4.png" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="dot bkorange fl"></div>
@@ -94,7 +109,7 @@ $(function() {
                                             <div id="orange-second" class="debater">
                                                 <div class="debater-avatar fl">
                                                     <div class="debater-avatar-blank">
-                                                    <img src="images/icon_avatar.jpg" alt="">
+                                                    <img src="avatar5.png" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="dot bkorange fl"></div>
@@ -106,7 +121,7 @@ $(function() {
                                             <div id="orange-third" class="debater">
                                                 <div class="debater-avatar fl">
                                                     <div class="debater-avatar-blank">
-                                                    <img src="images/icon_avatar.jpg" alt="">
+                                                    <img src="avatar6.png" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="dot bkorange fl"></div>

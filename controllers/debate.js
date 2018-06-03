@@ -117,6 +117,7 @@ exports.changeSide = function(req, res, next) {
             res.send({code: 0, data: err});
         } else {
             var recordId = result.recordId;
+            // 观众投票
             Record.findOne({_id: recordId}, {proVote: 1, conVote: 1, changeSide: 1}, function(err, result) {
                 if (err) {
                     res.send({code: 0, data: err});
@@ -139,7 +140,7 @@ exports.changeSide = function(req, res, next) {
                                 changeSide.push({userId: debater, attract: 0, leave: 1});
                             }
                         }
-                        // 观众改变立场记录
+                        // 更新信息
                         updateInfo.$set = {changeSide: changeSide};
                     }
                     // 正方或反方票数加一
