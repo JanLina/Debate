@@ -66,6 +66,7 @@ io.sockets.on('connection', function(socket) {
         if (data.completed) {  // 观众的评论
             io.sockets.in('debater').emit('comment', { code: 1, data: data });
             io.sockets.in('audience').emit('comment', { code: 1, data: data });
+            return;
         }
         if (data.stage === 'point') {  // 立论阶段
             io.sockets.in('debater').emit('newMsg', { code: 1, data: data });
@@ -73,11 +74,11 @@ io.sockets.on('connection', function(socket) {
             // io.sockets.in('debater').in('audience').emit('newMsg', { code: 1, data: data });
             // ...
             if (data.num === 3 && data.stand === 2) {  // 这个发言后，将是自由辩论
-                // delay = 5000;
-                delay = 0;
+                delay = 5000;
+                // delay = 0;
             } else {
-                // delay = 3000;
-                delay = 0;
+                delay = 3000;
+                // delay = 0;
             }
             setTimeout(() => {
                 io.sockets.in('debater').in('audience').emit('begin');
@@ -104,11 +105,11 @@ io.sockets.on('connection', function(socket) {
                 statements = [];
                 refuteStatement = [];
                 if (data.num === 3 && data.stand === 2) {
-                    // delay = 5000;
-                    delay = 0;
+                    delay = 5000;
+                    // delay = 0;
                 } else {
-                    // delay = 3000;
-                    delay = 0;
+                    delay = 3000;
+                    // delay = 0;
                 }
                 setTimeout(() => {
                     io.sockets.in('debater').emit('begin');

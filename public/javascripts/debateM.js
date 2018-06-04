@@ -305,6 +305,7 @@ $(function() {
             var that = this;
             var data = res.data;
             var refuteStatement = '';
+
             if (data.stage === 'free') {
                 data.content = '一辩：' + res.statements[0] 
                              + '二辩：' + res.statements[1]
@@ -496,13 +497,13 @@ $(function() {
                                             </div>`;
                             that.els.$debateProgress.append($(resultHtml));
                             that.data.completed = true;
-                            // 为观众显示评论框
-                            if (!that.data.isDebater) {
-                                var commentArea = `<div class="comment">
+                            var commentArea = `<div class="comment">
                                                     <div class="line comment-line"></div>
                                                     <span class="comment-font">评论区</span>
                                                 </div>`;
-                                that.els.$debateProgress.append($(commentArea));
+                            that.els.$debateProgress.append($(commentArea));
+                            // 为观众显示评论框
+                            if (!that.data.isDebater) {
                                 $('.audience-view .player-box').eq(0).addClass('hide');
                                 $('.audience-view .edit-box').eq(0).removeClass('hide');
                             }
