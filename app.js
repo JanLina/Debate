@@ -63,31 +63,34 @@ io.sockets.on('connection', function(socket) {
     socket.on('postMsg', function(data) {
         debate.publish(data);  // 调用controllers/debate.js的publish方法
         var delay = 0;
+        if (data.completed) {  // 观众的评论
+            io.sockets.in('debater').emit('comment', { code: 1, data: data });
+            io.sockets.in('audience').emit('comment', { code: 1, data: data });
+        }
         if (data.stage === 'point') {  // 立论阶段
             io.sockets.in('debater').emit('newMsg', { code: 1, data: data });
             io.sockets.in('audience').emit('newMsg', { code: 1, data: data });
             // io.sockets.in('debater').in('audience').emit('newMsg', { code: 1, data: data });
             // ...
             if (data.num === 3 && data.stand === 2) {  // 这个发言后，将是自由辩论
-                delay = 5000;
+                // delay = 5000;
+                delay = 0;
             } else {
-                delay = 3000;
+                // delay = 3000;
+                delay = 0;
             }
-            // setTimeout(() => {
-            //     io.sockets.in('debater').emit('begin');
-            //     io.sockets.in('audience').emit('begin');
-            // }, delay);
-            // io.sockets.in('debater').in('audience').emit('newMsg', { code: 1, data: data });
             setTimeout(() => {
                 io.sockets.in('debater').in('audience').emit('begin');
             }, delay);
         } else if (data.stage === 'free') {  // 自由辩论阶段
             if (data.refute) {
                 refuteStatement[data.order] = data.content;
+                io.sockets.in('debater').in('audience').emit('test', { counter: counter, data: data, statements: statements, refuteStatement: refuteStatement });
                 return;
             }
             statements[data.order] = data.content;
             counter ++;
+            io.sockets.in('debater').in('audience').emit('test', { counter: counter, data: data, statements: statements, refuteStatement: refuteStatement });
             if (counter === 3) {
             // if (counter === 1) {
                 statements.forEach(function(statement, index) {
@@ -101,9 +104,11 @@ io.sockets.on('connection', function(socket) {
                 statements = [];
                 refuteStatement = [];
                 if (data.num === 3 && data.stand === 2) {
-                    delay = 5000;
+                    // delay = 5000;
+                    delay = 0;
                 } else {
-                    delay = 3000;
+                    // delay = 3000;
+                    delay = 0;
                 }
                 setTimeout(() => {
                     io.sockets.in('debater').emit('begin');
@@ -119,7 +124,8 @@ io.sockets.on('connection', function(socket) {
             setTimeout(() => {
                 io.sockets.in('debater').emit('begin');
                 io.sockets.in('audience').emit('begin');
-            }, 3000);
+            // }, 3000);
+            }, 0);
         }
     });
     

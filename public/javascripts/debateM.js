@@ -13,7 +13,8 @@ $(function() {
             currentUser: { ...JSON.parse(sessionStorage.getItem('user')), ...{ order: -1 } },
             isDebater: false,
             voted: false,
-            refute: true
+            refute: true,
+            completed: false
         },
         socket: null,
         timer: null,
@@ -45,7 +46,10 @@ $(function() {
                 that.socket.emit('begin');
             });
             // 辩手发表言论
-            this.els.$publishBtn.click(function() {
+            // this.els.$publishBtn.click(function() {
+            //     that.publish();
+            // });
+            $('.edit-publish-button').click(function() {
                 that.publish();
             });
             // 自由辩论阶段，切换直播区
@@ -197,12 +201,17 @@ $(function() {
         },
         publish: function() {
             // 参数：compId, userId, stand, num, type, stage, content
-            var msg = this.els.$editContent.html();
+            var msg = '';
+            if (this.data.completed) {
+                msg = $('.audience-view .edit-content').eq(0).html();
+            } else {
+                msg = this.els.$editContent.html();
+            }
             msg = msg.replace(' contenteditable="true"', '');  // 传递的内容应是不可编辑的
             var progress = this.data.progress;
-            console.log('postMsg', progress.stage, progress.type, 'x0006');
             if (msg.trim().length != 0) {
-                this.socket.emit('postMsg', {
+                var params = {
+                    completed: this.data.completed,
                     refute: this.data.refute,
                     compId: this.data.compId,
                     userId: progress.userId,
@@ -212,7 +221,9 @@ $(function() {
                     stage: progress.stage,
                     content: msg,
                     order: this.data.currentUser.order
-                });
+                };
+                this.socket.emit('postMsg', params);
+                console.log('postMsg', params, 'x0006');
             };
             this.els.$editContent.html('');
             this.els.$publishBtn.attr('disabled', false);
@@ -267,6 +278,26 @@ $(function() {
             // 接收新发言
             that.socket.on('newMsg', function(res) {
                 that.handleNewMsg(res);
+            });
+
+            // 接收到评论
+            that.socket.on('comment', function(res) {
+                var newComment = `<div class="comment-block content-bk-orange">
+                                    <div class="debater-avatar-orange fl">
+                                        <div class="debater-avatar-blank">
+                                            <img src="/images/avatar7.png">
+                                        </div>
+                                    </div>
+                                    <div class="comment-content fr">
+                                        <div class="comment-name">成长的樱桃树</div>
+                                        <div class="comment-font">当家里有新生儿出生的时候，小孩还容易因为父母对新生儿更加照顾而产生嫉妒的情绪。如果之后在心中留下“我父母更喜欢我的某个兄弟姐妹”的执念的话，可能一辈子都会受到羞耻感和感情上无法被满足的困扰。如果家长时常不在身边（如父母离异或者工作忙碌），孩子感受到的被遗弃感和自我羞耻就会更加强烈。</div>
+                                    </div>
+                                </div>`;
+                $('.comment').eq(0).append($(newComment));
+            });
+
+            that.socket.on('test', function(res) {
+                console.log(res, 'x0011');
             });
         },
         handleNewMsg: function(res) {
@@ -337,7 +368,7 @@ $(function() {
                                             </div>
                                             <div class="content-block${data.stand === 2 ? ' content-bk-blue ' : ' content-bk-orange '}${data.stand === 2 ? 'fl' : 'fr'}">
                                                 <div class="content">
-                                                    ${data.content}
+                                                    ${resData.content}
                                                 </div>
                                             </div>
                                         </div>
@@ -464,6 +495,17 @@ $(function() {
                                                 </div>
                                             </div>`;
                             that.els.$debateProgress.append($(resultHtml));
+                            that.data.completed = true;
+                            // 为观众显示评论框
+                            if (!that.data.isDebater) {
+                                var commentArea = `<div class="comment">
+                                                    <div class="line comment-line"></div>
+                                                    <span class="comment-font">评论区</span>
+                                                </div>`;
+                                that.els.$debateProgress.append($(commentArea));
+                                $('.audience-view .player-box').eq(0).addClass('hide');
+                                $('.audience-view .edit-box').eq(0).removeClass('hide');
+                            }
                         });
                     }, 2000);
                 }
