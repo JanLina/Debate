@@ -1,0 +1,416 @@
+
+## 文件结构
+
+Vue.js 的源码都在 src 目录下
+
+```
+src
+├── compiler        # 编译相关 
+├── core            # 核心代码 
+├── platforms       # 不同平台的支持
+├── server          # 服务端渲染
+├── sfc             # .vue 文件解析
+├── shared          # 共享代码
+```
+
+#### compiler
+`Vue.js` 所有编译相关的代码。它包括把模板解析成 `ast` 语法树，`ast` 语法树优化，代码生成等功能。
+#### core
+`Vue.js` 的核心代码，包括内置组件、全局 `API` 封装，`Vue` 实例化、观察者、虚拟 `DOM`、工具函数等等。
+#### platforms
+不同平台的入口文件，主要是 `web` 平台和 `weex` 平台的，不同平台有其特殊的构建过程，当然我们的重点是 `web` 平台。
+#### server
+服务端渲染相关代码。
+#### sfc
+把 .vue 文件内容解析成一个 `JavaScript` 的对象。
+#### shared
+一些通用的工具方法，把复用的代码抽成一个独立的目录，让代码的阅读性和可维护性都变强。
+
+
+
+## 找到入口文件
+在 `package.json` 中，我们可以看到
+
+```
+"scripts": {
+    "dev": "rollup -w -c scripts/config.js --environment TARGET:web-full-dev"
+}
+```
+
+继续来到 `scripts/config.js`
+
+```
+const builds = {
+  // ... 
+  // Runtime+compiler development build (Browser)
+  'web-full-dev': {
+    entry: resolve('web/entry-runtime-with-compiler.js'),
+    dest: resolve('dist/vue.js'),
+    format: 'umd',
+    env: 'development',
+    alias: { he: './entity-decoder' },
+    banner
+  },
+  // ...
+}
+```
+
+到此，我们找到了入口文件 `entry-runtime-with-compiler.js`，顺着这个文件我们可以找到 `Vue` 构造函数的位置，在 `src/core/instance/index.js`。下图是各个文件对 `Vue` 做的一层层包装
+
+
+![这里本该有张图的](http://assets.processon.com/chart_image/5aef25d5e4b07dbb99428786.png)
+
+
+
+接下来我们从 `core/instance/index.js` 开始来看，创建一个 `Vue` 对象的过程，具体发生了什么
+
+
+
+## new Vue() 发生了什么
+
+`/core/instance/index.js` 中给 `Vue.prototype` 挂载了 `_init` 方法，`new Vue()` 首先就会调用 `_init()`
+
+```
+// src/core/instance/index.js
+
+function Vue (options) {
+  if (process.env.NODE_ENV !== 'production' &&
+    !(this instanceof Vue)
+  ) {
+    warn('Vue is a constructor and should be called with the `new` keyword')
+  }
+  this._init(options)   // 这里调用了 _init()
+}
+
+initMixin(Vue)   // 给 Vue.prototype 挂载 _init() 方法
+stateMixin(Vue)
+eventsMixin(Vue)
+lifecycleMixin(Vue)
+renderMixin(Vue)
+
+export default Vue
+```
+让我们看看 `_init()` 做了些什么
+
+```
+// src/core/instance/init.js
+// 只截取了主要部分
+
+Vue.prototype._init = function(options?: Object) {
+  const vm: Component = this           // 把 this 赋值给 vm
+
+  vm.$options = mergeOptions(          // 将我们传入的 options 和 Vue 本身挂载的 options 合并
+    resolveConstructorOptions(vm.constructor),
+    options || {},
+    vm
+  )
+
+  if (process.env.NODE_ENV !== 'production') {
+    initProxy(vm)                       // 初始化代理
+  } else {
+    vm._renderProxy = vm
+  }
+
+  initLifecycle(vm)                     // 初始化生命周期
+  initEvents(vm)                        // 初始化事件
+  initRender(vm)                        // 初始化 render
+  callHook(vm, 'beforeCreate')          // 调用 beforeCreate 钩子
+  initInjections(vm)                    // 初始化注入值 before data/props
+  initState(vm)                         // 挂载 data/props/methods/watcher/computed，实现双向绑定
+  initProvide(vm)                       // 初始化 Provide after data/props
+  callHook(vm, 'created')               // 调用 created 钩子
+
+  if (vm.$options.el) {                 // $options 可以认为是我们传给 `new Vue(options)` 的 options
+    vm.$mount(vm.$options.el)           // 调用 $mount 进行挂载
+  }
+}
+```
+
+#### initData
+
+上面我们提到，`Vue` 实例在初始化的时候调用了 `Vue.prototype._init`，`_init` 方法里调用了 `initState()`，`initState()` 中又调用了 `initData()`，实现 `vm._data` 的双向绑定，`watch`、`computed` 等的绑定原理都差不多，所以我们今天主要关注 `data` 的响应式的实现。
+
+`initData` 主要做了两件事，一是将 `_data` 上面的数据代理到 `vm` 上，二是通过 `observe` 方法将所有数据变成响应式的。
+
+```
+// src/core/instance/state.js
+
+function initData (vm: Component) {
+  let data = vm.$options.data
+  const keys = Object.keys(data)
+  
+  while (i--) {
+    const key = keys[i]
+    // 将 data 上面的属性代理到 vm 实例上，这就是为什么我们可以通过 this.xxx 访问到 data 里的属性
+    proxy(vm, `_data`, key)
+  }
+  // 把 data 变成响应式
+  observe(data, true /* asRootData */)
+}
+```
+
+
+
+## 响应式
+
+#### Object.defineProperty
+
+`Vue` 的响应式依赖于 `Object.defineProperty`，这也是 `Vue.js` 不支持 IE8 以及更低版本浏览器的原因。
+
+通过 `Object.defineProperty` 为对象绑定 `getter` 和 `setter`，把对象变成响应式的：
+
+```
+Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: () => {
+        console.log('我被读取了');
+    },
+    set: newVal => {
+        console.log('我的值被改变了');
+    }
+})
+```
+
+
+#### 观察者模式
+
+`Observer`：每个响应式数据都有一个 `__ob__` 属性，其中保存着一个 `Observer` 实例，管理 `Object.defineProperty` 的过程，进行响应式的绑定。
+
+`Dep`：【发布者】收集依赖，数据发生变化的时候通知 `watcher`，有一个 `subs` 数组记录“该通知到哪里去"，每个响应式数据都有一个 `Dep` 来管理它的依赖。
+
+`Watcher`：【订阅者】数据发生变化时，接收到 `dep` 的通知并更新视图。
+
+举个小例子：
+
+```
+<div>
+    <p>{{ message }}</p>
+</div>
+
+data: {
+    text: 'hello world',
+    message: 'hello vue',
+}
+watch: {
+    message: function (val, oldVal) {
+        console.log('new: %s, old: %s', val, oldVal)
+    },
+}
+computed: {
+    messageT() {
+        return this.message + '!';
+    }
+}
+```
+
+![这里本该有张图的](https://user-gold-cdn.xitu.io/2019/6/2/16b1857fd4532ff0?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+#### 如何收集依赖
+`defineReactive`：响应式的核心，通过 `Object.defineProperty` 为数据添加 `getter\setter` 方法，实现**依赖收集**和**派发更新**
+
+```
+// src/core/observer/index.js
+
+export function defineReactive (obj, key, val) {
+  // 每个响应式数据都会新建一个属于自己的 Dep 实例
+  // getter 和 setter 里用的都是这个 dep
+  const dep = new Dep()
+
+  // 给 obj 的属性 key 添加 getter 和 setter
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter () {
+      // 依赖收集
+      if (Dep.target) {
+        dep.depend()
+      }
+      return val
+    },
+    set: function reactiveSetter (newVal) {
+      // 派发更新
+      // ...
+    }
+  })
+}
+```
+上面的代码在 `Dep.target` 有值的时候才执行 `dep.depend`，我们先来看看 `Dep.target` 是什么
+
+`Dep.target` 是 `Dep` 的一个静态属性，保存一个全局唯一的 `watcher`，因为同一时间只有一个 `watcher` 可以被收集
+
+```
+// src/core/observer/dep.js
+
+export default class Dep {
+  static target: ?Watcher;
+  id: number;
+  subs: Array<Watcher>;
+}
+```
+
+初始化 `Watcher` 会将 `Dep.target` 赋值为当前的 `Watcher` 实例
+
+```
+// src/core/observer/watcher.js
+
+export default class Watcher {
+    constructor () {
+        this.get();
+    }
+    get () {
+        pushTarget(this);        // pushTarget 方法引自 dep.js
+    }
+}
+
+// src/core/observer/dep.js
+
+export function pushTarget (target: ?Watcher) {
+  targetStack.push(target)      // targetStack 是依赖收集过程中的辅助栈
+  Dep.target = target           // 给 Dep.target 赋值
+}
+```
+
+`Dep.target` 有值说明此刻有一个 `watcher` 供数据绑定，接着调用 `dep.depend`，我们来看看 `Dep` 的 `depend` 方法
+
+```
+// src/core/observer/index.js
+
+  Object.defineProperty(obj, key, {
+    get: function reactiveGetter () {
+      // 依赖收集
+      if (Dep.target) {
+        dep.depend()
+      }
+      return val
+    },
+    set: function reactiveSetter (newVal) {
+      // 派发更新
+      // ...
+    }
+  })
+  
+// src/core/observer/dep.js
+
+depend () {
+  if (Dep.target) {
+    Dep.target.addDep(this)
+  }
+}
+```
+
+接着看 `Watcher` 的 `addDep` 方法
+
+```
+// src/core/observer/watcher.js
+
+addDep (dep: Dep) {
+  const id = dep.id
+  // 做一些逻辑判断，以保证同一数据不会被添加多次
+  if (!this.newDepIds.has(id)) {
+    this.newDepIds.add(id)
+    this.newDeps.push(dep)
+    if (!this.depIds.has(id)) {
+      dep.addSub(this)
+    }
+  }
+}
+```
+
+继续，`Dep` 的 `addSub` 方法
+
+```
+// src/core/observer/dep.js
+
+addSub (sub: Watcher) {
+  this.subs.push(sub)
+}
+```
+
+到此，依赖收集最终在 `dep.subs` 中 `push` 了 `watcher`，这样当读取数据触发 `setter` 的时候，`dep` 就会去通知 `subs` 内的所有 `watcher`，该更新视图了。
+
+可以说，`Dep` 和 `Watcher` 在 `getter` 方法中建立了关联，过程中有一个全局的 `Watcher` 栈做辅助，这是一个非常巧妙的设计。
+
+接下来我们就看看，数据被修改的时候，`setter` 是怎么派发更新的
+
+#### 如何派发更新
+数据变更的时候会触发 `setter`，从而触发派发更新
+
+```
+// src/core/observer/index.js
+
+export function defineReactive (obj, key, val) 
+  const dep = new Dep()
+
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter () {
+      // 依赖收集
+      // ...
+    },
+    set: function reactiveSetter (newVal) {
+      // 派发更新
+      dep.notify()
+    }
+  })
+}
+```
+
+接下来我们看一下 `Dep` 的 `notify` 方法做了些什么
+
+```
+  // src/core/observer/dep.js
+  
+  notify () {
+    const subs = this.subs.slice()
+    for (let i = 0, l = subs.length; i < l; i++) {
+      subs[i].update()      // 调用每一个 watcher 的 update 方法
+    }
+  }
+```
+
+`dep.notify` 方法会通知 `dep.subs` 内的所有 `watcher`，该更新视图了
+
+```
+  // src/core/observer/watcher.js
+
+  update () {
+    if (this.lazy) {
+      this.dirty = true
+    } else if (this.sync) {
+      this.run()
+    } else {
+      // 在一般组件数据更新的场景，会走到这里
+      // 这里引入了一个队列的概念，并不会每次数据改变都去触发 Watcher 的回调
+      // 而是把这些 Watcher 先添加到一个队列里，然后在 nextTick 一起更新
+      queueWatcher(this)
+    }
+  }
+
+  run () {
+    const value = this.get()
+  }
+
+  get () {
+    pushTarget(this)
+    let value
+    const vm = this.vm
+    // 调用 this.getter 是视图更新最核心的一步
+    value = this.getter.call(vm, vm)
+    return value
+  }
+```
+
+实例化 `Watcher` 的时候，会将 `this.getter` 赋值为 `updateComponent` 方法，而 `updateComponent` 方法内又会调用 `vm._update`，进而执行虚拟 `DOM` 的 `diff`，更新视图。
+
+#### 响应式总结
+![这里本该有张图的](https://camo.githubusercontent.com/3845b9554e62650727fa7cae8f1c169060b879f7/68747470733a2f2f636e2e7675656a732e6f72672f696d616765732f646174612e706e67)
+
+响应式的实现主要分为两个部分，依赖收集和派发更新。
+
+**依赖收集**的目的是为了当这些响应式数据发生变化，能知道应该通知哪些订阅者去做相应的逻辑处理。
+
+**派发更新**实际上就是当数据发生变化的时候，把在依赖过程中订阅的的所有观察者，也就是 watcher，都触发它们的 update 过程。
+
+这个过程又利用了队列做了进一步优化，在 nextTick 后执行所有 watcher 的 run，最后执行它们的回调函数。
